@@ -1,0 +1,146 @@
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Helpers\ChangaAppHelper;
+use App\Http\Controllers\Controller;
+use App\Models\Mediate;
+use App\Models\MediateTag;
+use App\Models\MediateTagMulti;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+class MediateController extends BaseController
+{
+    public function mediateTag() {
+        $mediate_tags = MediateTag::get();
+        if($mediate_tags->count() > 0) {
+            $success[ 'data' ] = $mediate_tags;
+            return $this->sendResponse( $success, 'Success' );
+        } else {
+            return $this->sendResponse( [], 'No Data found');
+        }
+    }
+
+    public function mediate(Request $request){
+        $users = Mediate::with('user', 'mediateTagMulti', 'favourite')->get();
+        if($request->id) {
+            $users = Mediate::where('id', $request->id)->with('mediateTagMulti', 'user', 'favourite')->get();
+        }
+
+        if($request->tag_id) {
+            $multi = MediateTagMulti::where('mediate_tag_id', $request->tag_id)->get()->pluck('mediate_id')->toArray();
+            $users = Mediate::with('mediateTagMulti','user', 'favourite')->whereIn('id', $multi)->get();
+        }
+
+        if($users->count() > 0) {
+            foreach($users as $key => $mediate) {
+                $description = strip_tags(html_entity_decode($mediate->description));
+                $users[$key]['description'] = strip_tags(nl2br($description));
+                $users[$key]['file'] = asset('/storage/file/'. $mediate->file);
+                $users[$key]['user']['profile_pic'] = !empty($mediate->profile_pic) ? asset('/storage/profile_pic/'. $mediate->profile_pic) : null;
+
+                $users[$key]['user']['background_image'] = !empty($mediate->background_image) ? asset('/storage/file/'. $mediate->background_image) : null;
+
+                $arr = [];
+                foreach($mediate->mediateTagMulti as $tag) {
+                    $arr[] = MediateTag::where('id', $tag->mediate_tag_id)->get()->toArray();
+                }
+                $users[$key]['mediate_tag'] = $arr;
+            }
+            $success[ 'data' ] = $users;
+            return $this->sendResponse( $success, 'Success' );
+        } else {
+            return $this->sendResponse( [], 'No Data found');
+        }
+    }
+
+    public function store(Request $request) {
+        try {
+            if($request->id && !Mediate::find($request->id)) {
+                return $this->sendError('not found', [] );
+            }
+
+            $validator = Validator::make($request->all(), self::validationForStore($request));
+            if ($validator->fails()) {
+                return $this->sendError( $validator->errors(), [] );
+            }
+
+            if($request->file('file')) {
+                $profile = $request->file('file');
+                $path = "file";
+                $fileName = ChangaAppHelper::uploadfile($profile, $path);
+                $fileType = ChangaAppHelper::checkFileExtension($fileName);
+            }
+
+            if($request->file('background_image')) {
+                $profile = $request->file('background_image');
+                $path = "file";
+                $background_image = ChangaAppHelper::uploadfile($profile, $path);
+            } else {
+                $background_image = $request->background_image;
+            }
+
+            $Learn = Mediate::updateOrCreate(['id' => $request->id],
+                [
+                    // 'mediate_tag_id' => $request->tag,
+                    'user_id' => auth()->user()->id,
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'file' => $fileName,
+                    'file_type' => $fileType,
+                    'background_image' => $background_image,
+                ]
+            );
+
+            if(isset($request->tag)) {
+                MediateTagMulti::where('mediate_id', $Learn->id)->delete();
+                foreach($request->tag as $tag) {
+                    $mutli  = new MediateTagMulti();
+                    $mutli->mediate_tag_id = $tag;
+                    $mutli->mediate_id = $Learn->id;
+              
+                    $mutli->save();
+                }
+            }
+
+            $Learn->file = asset('/storage/file/'. $Learn->file);
+            $Learn->background_image = asset('/storage/file/'. $Learn->background_image);
+ 
+
+            return $this->sendResponse( $Learn, 'Success' );
+
+        } catch (\Exception $ex) {
+            return $this->sendResponse( $ex->getMessage(), 'something went wrong');
+        }
+    }
+
+    public function validationForStore($request)
+    {
+        $file = 'required|mimetypes:image/jpeg,image/png,image/gif,video/webm,video/mp4,audio/mp3';
+        return [
+            'tag' => 'required',
+            'title' => 'required|unique:mediates,title,'. $request->id,
+            'description' => 'required',
+            'file' => $file,
+            'background_image' => 'required|mimetypes:image/jpeg,image/png,image/jpg',
+        ];
+    }
+
+    public function destroy(Request $request) {
+        try {
+            if(!Mediate::find($request->id)) {
+                return $this->sendError('not found', [] );
+            }
+
+            if(Mediate::where('id', $request->id)->delete()) {
+                MediateTagMulti::where('mediate_id',$request->id)->delete();
+                return $this->sendResponse( [], 'Success' );
+            }
+        }
+        catch (\Exception $ex) {
+            return $this->sendResponse( $ex->getMessage(), 'something went wrong');
+        }
+    }
+}
+
