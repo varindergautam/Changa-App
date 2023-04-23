@@ -15,8 +15,7 @@ class TherapyController extends BaseController
     public function therapyTag() {
         $mediate_tags = TherapyTag::get();
         if($mediate_tags->count() > 0) {
-            $success[ 'data' ] = $mediate_tags;
-            return $this->sendResponse( $success, 'Success' );
+            return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');
         }
@@ -49,8 +48,7 @@ class TherapyController extends BaseController
                 }
                 $users[$key]['therapy_tag'] = $arr;
             }
-            $success[ 'data' ] = $users;
-            return $this->sendResponse( $success, 'Success' );
+            return $this->sendResponse( $users, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');
         }
@@ -107,6 +105,9 @@ class TherapyController extends BaseController
                 }
             }
 
+            $pushNotificationData['message'] = $Learn->title;
+            $pushNotificationData['id'] = $Learn->id;
+            $pushNotificationData['notification_type'] = 'therapy';
 
             $Learn->file = asset('/storage/file/'. $Learn->file);
             $Learn->background_image = asset('/storage/file/'. $Learn->background_image);

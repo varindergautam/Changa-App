@@ -11,6 +11,7 @@ use App\Mail\SendOtpMail;
 use Validator;
 use Mail;
 use App\Models\User;
+use App\Models\UserDeviceToken;
 use App\Models\VerificationCode;
 use Carbon\Carbon;
 use App\Mail\UserRegisterMail;
@@ -186,6 +187,8 @@ class AuthController extends BaseController {
             'phone' => 'required|unique:users|max:191',
             'password' => 'required|min:6|max:191',
             'user_type' => 'required',
+            'device_type' => 'required',
+            'device_token' => 'required',
         ]);
 
         if($validator->fails()){
@@ -236,7 +239,15 @@ class AuthController extends BaseController {
                 Mail::to($request->email)->send(new SendOtpMail($mailData));
 
                 Mail::to($request->email)->send(new UserRegisterMail($mailData));
-
+                $user_device_token = UserDeviceToken::updateOrCreate(['user_id' => $user->id],
+                        [
+                            'user_id' => $user->id,
+                            'device_type' => $request->device_type,
+                            'device_token' => $request->device_token,
+                            'is_login' => '1',
+                            'login_login' => date('Y-m-d H:i:s'),
+                        ]);
+                $user->user_device_token = $user_device_token;
                 $success[ 'register_user_data' ] = $user;
                 $success[ 'otp_message' ] = $otp;
                 $success[ 'token' ] = $token;
@@ -359,6 +370,8 @@ class AuthController extends BaseController {
             $validator = Validator::make($request->all(), [
                 'email' => 'required|string|max:191',
                 'password' => 'required',
+                'device_type' => 'required',
+                'device_token' => 'required',
             ]);
             if($validator->fails()){
                 return $this->sendError($validator->errors()->all());
@@ -388,8 +401,19 @@ class AuthController extends BaseController {
                     'api_token' => $token
                 ] );
                 $user->profile_pic = !empty($user->profile_pic) ? asset('/storage/profile_pic/'. $user->profile_pic) : NULL;
+                $user_device_token = UserDeviceToken::updateOrCreate(['user_id' => $user->id],
+                        [
+                            'user_id' => $user->id,
+                            'device_type' => $request->device_type,
+                            'device_token' => $request->device_token,
+                            'is_login' => '1',
+                            'login_login' => date('Y-m-d H:i:s'),
+                        ]);
+                $user->user_device_token = $user_device_token;
                 $success[ 'login_user_data' ] = $user;
                 $success[ 'token' ] = $token;
+            
+
                 return $this->sendResponse( $success, 'Login Done' );
             }
         } catch (\Throwable $th) {

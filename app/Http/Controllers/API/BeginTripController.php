@@ -26,8 +26,7 @@ class BeginTripController extends BaseController
         try{
             $feelings = Felling::get();
             if($feelings->count() > 0) {
-                $success[ 'data' ] = $feelings;
-                return $this->sendResponse( $success, 'Success' );
+                return $this->sendResponse( $feelings, 'Success' );
             } else {
                 return $this->sendResponse( [], 'No Data found');
             }
@@ -40,8 +39,7 @@ class BeginTripController extends BaseController
         try{
             $feelings = Intention::get();
             if($feelings->count() > 0) {
-                $success[ 'data' ] = $feelings;
-                return $this->sendResponse( $success, 'Success' );
+                return $this->sendResponse( $feelings, 'Success' );
             } else {
                 return $this->sendResponse( [], 'No Data found');
             }
@@ -57,8 +55,7 @@ class BeginTripController extends BaseController
                 foreach($feelings as $key => $audio_tag) {
                     $feelings[$key]['file'] = !empty($audio_tag->file) ? asset('/storage/file/'. $audio_tag->file) : null;
                 }
-                $success[ 'data' ] = $feelings;
-                return $this->sendResponse( $success, 'Success' );
+                return $this->sendResponse( $feelings, 'Success' );
             } else {
                 return $this->sendResponse( [], 'No Data found');
             }
@@ -71,8 +68,7 @@ class BeginTripController extends BaseController
         try{
             $feelings = AudioTag::get();
             if($feelings->count() > 0) {
-                $success[ 'data' ] = $feelings;
-                return $this->sendResponse( $success, 'Success' );
+                return $this->sendResponse( $feelings, 'Success' );
             } else {
                 return $this->sendResponse( [], 'No Data found');
             }
@@ -105,8 +101,7 @@ class BeginTripController extends BaseController
                 }
                 $users[$key]['audio_tag'] = $arr;
             }
-            $success[ 'data' ] = $users;
-            return $this->sendResponse( $success, 'Success' );
+            return $this->sendResponse( $users, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');
         }
@@ -116,8 +111,7 @@ class BeginTripController extends BaseController
         try{
             $feelings = TripJournal::get();
             if($feelings->count() > 0) {
-                $success[ 'data' ] = $feelings;
-                return $this->sendResponse( $success, 'Success' );
+                return $this->sendResponse( $feelings, 'Success' );
             } else {
                 return $this->sendResponse( [], 'No Data found');
             }

@@ -15,8 +15,7 @@ class LearnController extends BaseController
     public function learnTag() {
         $mediate_tags = LearnTag::get();
         if($mediate_tags->count() > 0) {
-            $success[ 'data' ] = $mediate_tags;
-            return $this->sendResponse( $success, 'Success' );
+            return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');
         }
@@ -50,7 +49,6 @@ class LearnController extends BaseController
                 }
                 $users[$key]['learn_tag'] = $arr;
             }
-            $success[ 'data' ] = $users;
             return $this->sendResponse( $users, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');

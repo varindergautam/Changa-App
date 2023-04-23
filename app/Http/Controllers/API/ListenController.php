@@ -15,8 +15,7 @@ class ListenController extends BaseController
     public function listenTag() {
         $mediate_tags = ListenTag::get();
         if($mediate_tags->count() > 0) {
-            $success[ 'data' ] = $mediate_tags;
-            return $this->sendResponse( $success, 'Success' );
+            return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');
         }

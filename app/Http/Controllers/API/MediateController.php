@@ -15,8 +15,7 @@ class MediateController extends BaseController
     public function mediateTag() {
         $mediate_tags = MediateTag::get();
         if($mediate_tags->count() > 0) {
-            $success[ 'data' ] = $mediate_tags;
-            return $this->sendResponse( $success, 'Success' );
+            return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');
         }
@@ -48,8 +47,7 @@ class MediateController extends BaseController
                 }
                 $users[$key]['mediate_tag'] = $arr;
             }
-            $success[ 'data' ] = $users;
-            return $this->sendResponse( $success, 'Success' );
+            return $this->sendResponse( $users, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');
         }

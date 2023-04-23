@@ -1,6 +1,9 @@
 <?php
 namespace App\Helpers;
 
+use App\Models\User;
+use App\Models\UserDeviceToken;
+
 class ChangaAppHelper 
 {
     public static function sendAjaxResponse($valid, $message, $redirect = "", $data = [], $validations = [])
@@ -58,6 +61,96 @@ class ChangaAppHelper
             $fileType = config('fileType.audio');
         }
         return $fileType;
+    }
+
+
+    //Send Notification
+    public static function sendNotication($notifcationUserId, $data)
+    {
+        $user = UserDeviceToken::where('user_id', $notifcationUserId)->first();
+        if ($user && !is_null($user->device_token) && !is_null($user->device_type)) {
+
+            $device_token = $user->device_token;
+
+            if ($user->device_type == config('deviceType.android'))
+            {
+                 $fcmMsg = array(
+                     'body' => $data['message'],
+                     'title' => $data['message'],
+                     // 'largeIcon' => 'large_icon',
+                     // 'smallIcon' => 'small_icon',
+                     // 'sound' => 'default',
+                     // 'badge' => 1,
+                     // 'notification_type' => $data['notification_type'],
+                     // 'id' => $data['id'],
+                 );
+
+                 $extraData = ['notification_type' => $data['notification_type'],
+                     'id' => $data['id']];
+
+                 $fcmFields = ['to' => $device_token, 'notification' => $fcmMsg, 'data' => $extraData];
+
+                 $headers = array(
+                     'Authorization: key=' . config('deviceType.server_key'),
+                     'Content-Type: application/json'
+                 );
+
+                 $ch = curl_init();
+                 curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                 curl_setopt($ch, CURLOPT_POST, true);
+                 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmFields));
+
+                 $result = curl_exec($ch);
+                 \Log::info('Remainder Notification ANDROID.');
+                // print_r($result);die('and');
+                 curl_close($ch);
+            }
+
+            else
+            {
+                if ($user->device_type == config('deviceType.ios'))
+                {
+
+                    $fcmMsg = array(
+                     'body' => $data['message'],
+                     'title' => $data['message'],
+                     // 'largeIcon' => 'large_icon',
+                     // 'smallIcon' => 'small_icon',
+                     // 'sound' => 'default',
+                     // 'badge' => 1,
+                     // 'notification_type' => $data['notification_type'],
+                     // 'remainder_id' => $data['remainder_id'],
+                 );
+
+                 $extraData = ['notification_type' => $data['notification_type'],
+                     'remainder_id' => $data['remainder_id']];
+
+                 $fcmFields = ['to' => $device_token, 'notification' => $fcmMsg, 'data' => $extraData];
+
+                    $headers = array(
+                        'Content-Type: application/json',
+                        'Authorization: key=' . config('deviceType.server_key'),
+                    );
+
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmFields));
+
+                    $result = curl_exec($ch);
+
+                    \Log::info('Remainder Notification IOS.');
+                    // print_r($result);die('ios');
+                    curl_close($ch);
+                }
+            }
+        }
     }
 
 }

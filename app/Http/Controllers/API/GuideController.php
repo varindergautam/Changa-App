@@ -16,8 +16,7 @@ class GuideController extends BaseController
                 foreach($mediate_tags as $key => $mediate_tag) {
                     $mediate_tags[$key]['file'] = !empty($mediate_tag->file) ? asset('/storage/file/'. $mediate_tag->file) : null;
                 }
-                $success[ 'data' ] = $mediate_tags;
-                return $this->sendResponse( $success, 'Success' );
+                return $this->sendResponse( $mediate_tags, 'Success' );
             } else {
                 return $this->sendResponse( [], 'No Data found');
             }
@@ -26,16 +25,22 @@ class GuideController extends BaseController
         }
     }
 
-    public function index() {
+    public function index(Request $request) {
         try {
             $mediate_tags = Guide::with('guideCategory', 'user')->get();
+            if($request->category_id) {
+                $mediate_tags = Guide::with('guideCategory', 'user')
+                ->whereHas('guideCategory', function($query) use ($request){
+                    $query->where('id', $request->category_id);
+                })
+                ->get();
+            }
             if($mediate_tags->count() > 0) {
                 foreach($mediate_tags as $key => $mediate_tag) {
                     $mediate_tags[$key]['file'] = !empty($mediate_tag->file) ? asset('/storage/file/'. $mediate_tag->file) : null;
                     $mediate_tags[$key]['guideCategory']['file'] = !empty($mediate_tag->guideCategory->file) ? asset('/storage/file/'. $mediate_tag->guideCategory->file) : null;
                 }
-                $success[ 'data' ] = $mediate_tags;
-                return $this->sendResponse( $success, 'Success' );
+                return $this->sendResponse( $mediate_tags, 'Success' );
             } else {
                 return $this->sendResponse( [], 'No Data found');
             }
