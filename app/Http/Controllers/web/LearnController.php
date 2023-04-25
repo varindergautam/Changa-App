@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LearnTag;
 use App\Models\Learn;
 use App\Models\LearnTagMulti;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -153,6 +154,16 @@ class LearnController extends Controller
                     $mutli->learn_id = $learn->id;
               
                     $mutli->save();
+                }
+            }
+
+            $pushNotificationData['message'] = $learn->title;
+            $pushNotificationData['id'] = $learn->id;
+            $pushNotificationData['notification_type'] = 'therapy';
+            $users = User::where('user_type', config('userTypes.user'))->get()->pluck('id');
+            if(isset($users)) {
+                foreach($users as $user) {
+                    ChangaAppHelper::sendNotication($user, $pushNotificationData);
                 }
             }
 

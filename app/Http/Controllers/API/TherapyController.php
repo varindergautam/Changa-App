@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Therapy;
 use App\Models\TherapyTag;
 use App\Models\TherapyTagMulti;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -108,7 +109,14 @@ class TherapyController extends BaseController
             $pushNotificationData['message'] = $Learn->title;
             $pushNotificationData['id'] = $Learn->id;
             $pushNotificationData['notification_type'] = 'therapy';
+            $users = User::where('user_type', config('userTypes.user'))->get()->pluck('id');
+            if(isset($users)) {
+                foreach($users as $user) {
+                    ChangaAppHelper::sendNotication($user, $pushNotificationData);
+                }
+            }
 
+            
             $Learn->file = asset('/storage/file/'. $Learn->file);
             $Learn->background_image = asset('/storage/file/'. $Learn->background_image);
 

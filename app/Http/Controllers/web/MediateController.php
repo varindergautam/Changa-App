@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Mediate;
 use App\Models\MediateTag;
 use App\Models\MediateTagMulti;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -152,6 +153,16 @@ class MediateController extends Controller
                     $mutli->mediate_id = $mediate->id;
               
                     $mutli->save();
+                }
+            }
+
+            $pushNotificationData['message'] = $mediate->title;
+            $pushNotificationData['id'] = $mediate->id;
+            $pushNotificationData['notification_type'] = 'therapy';
+            $users = User::where('user_type', config('userTypes.user'))->get()->pluck('id');
+            if(isset($users)) {
+                foreach($users as $user) {
+                    ChangaAppHelper::sendNotication($user, $pushNotificationData);
                 }
             }
 

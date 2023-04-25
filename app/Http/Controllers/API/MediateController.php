@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Mediate;
 use App\Models\MediateTag;
 use App\Models\MediateTagMulti;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -105,7 +106,16 @@ class MediateController extends BaseController
             $Learn->file = asset('/storage/file/'. $Learn->file);
             $Learn->background_image = asset('/storage/file/'. $Learn->background_image);
  
-
+            $pushNotificationData['message'] = $Learn->title;
+            $pushNotificationData['id'] = $Learn->id;
+            $pushNotificationData['notification_type'] = 'therapy';
+            $users = User::where('user_type', config('userTypes.user'))->get()->pluck('id');
+            if(isset($users)) {
+                foreach($users as $user) {
+                    ChangaAppHelper::sendNotication($user, $pushNotificationData);
+                }
+            }
+            
             return $this->sendResponse( $Learn, 'Success' );
 
         } catch (\Exception $ex) {

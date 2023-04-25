@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Listen;
 use App\Models\ListenTag;
 use App\Models\ListenTagMulti;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -151,6 +152,16 @@ class ListenController extends Controller
                     $mutli->listen_tag_id = $tag;
                     $mutli->listen_id = $listen->id;
                     $mutli->save();
+                }
+            }
+
+            $pushNotificationData['message'] = $listen->title;
+            $pushNotificationData['id'] = $listen->id;
+            $pushNotificationData['notification_type'] = 'therapy';
+            $users = User::where('user_type', config('userTypes.user'))->get()->pluck('id');
+            if(isset($users)) {
+                foreach($users as $user) {
+                    ChangaAppHelper::sendNotication($user, $pushNotificationData);
                 }
             }
 

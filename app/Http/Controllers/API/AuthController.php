@@ -13,6 +13,7 @@ use Mail;
 use App\Models\User;
 use App\Models\UserDeviceToken;
 use App\Models\VerificationCode;
+use App\Models\UserNotificationSetting;
 use Carbon\Carbon;
 use App\Mail\UserRegisterMail;
 use Carbon\Exceptions\Exception;
@@ -23,8 +24,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class AuthController extends BaseController {
-
-
     
     public function verifyOtp(Request $request)
     {
@@ -56,8 +55,6 @@ class AuthController extends BaseController {
     
         return response(['user' => $user->makeHidden(['password']), 'access_token' => $token]);
     }
-    
-
     
     public function forgotPassword( Request $request ) {
 
@@ -372,6 +369,9 @@ class AuthController extends BaseController {
                 'password' => 'required',
                 'device_type' => 'required',
                 'device_token' => 'required',
+                'end_trip_remainder' => 'required',
+                'new_content' => 'required',
+                'trip_update' => 'required',
             ]);
             if($validator->fails()){
                 return $this->sendError($validator->errors()->all());
@@ -409,6 +409,15 @@ class AuthController extends BaseController {
                             'is_login' => '1',
                             'login_login' => date('Y-m-d H:i:s'),
                         ]);
+
+                        UserNotificationSetting::updateOrCreate(['user_id' => $user->id],
+                        [
+                            'user_id' => $user->id,
+                            'end_trip_remainder' => $request->end_trip_remainder,
+                            'new_content' => $request->new_content,
+                            'trip_update' => $request->trip_update,
+                        ]);
+
                 $user->user_device_token = $user_device_token;
                 $success[ 'login_user_data' ] = $user;
                 $success[ 'token' ] = $token;
@@ -512,6 +521,17 @@ class AuthController extends BaseController {
                 'profile_pic' => $fileName,
                 'address' => $request->address,
             ]);
+            if($request->end_trip_remainder && $request->new_content && $request->trip_update && $request->review_narrative_identity && $request->reflect_after_trip){
+            $user_update->notification_settings = UserNotificationSetting::updateOrCreate(['user_id' => $user->id],
+                [
+                    'user_id' => $user->id,
+                    'end_trip_remainder' => $request->end_trip_remainder,
+                    'new_content' => $request->new_content,
+                    'trip_update' => $request->trip_update,
+                    'reflect_after_trip' => $request->reflect_after_trip,
+                    'review_narrative_identity' => $request->review_narrative_identity,
+                ]);
+            }
         $user_update->profile_pic = !empty($user_update->profile_pic) ? asset('/storage/profile_pic/'. $user_update->profile_pic) : NULL;
         if($user_update){
             return $this->sendResponse( $user_update, 'Success' );

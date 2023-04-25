@@ -64,4 +64,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function userNotificationSetting() {
+        return $this->hasOne('App\Models\UserNotificationSetting', 'user_id');
+    }
 }
