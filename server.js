@@ -1,32 +1,85 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 // const http = require('http');
-const server = require('http').createServer(app);
+const server = require("http").createServer(app);
+var mysql = require("mysql");
 
-
-const io = require('socket.io')(server, {
-  cors : { origin: "*" ,reconnect: true, rejectUnauthorized : false}
+var con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "apk_changa_app",
 });
 
-app.get('/', function (req, res) {
-    res.send('<h1>Socket is working</h1>');
+con.connect(function (err) {
+    if (err) throw err;
 });
 
-io.on('connection', (socket) => {
-    console.log('yes');
-  console.log('connection', socket.id);
-
-  socket.on('message', (message) => {
-    console.log(message);
-    io.emit('message', message);
+const io = require("socket.io")(server, {
+    cors: { origin: "*", reconnect: true, rejectUnauthorized: false },
 });
 
+io.on("connection", (socket) => {
+    console.log("connection", socket.id);
 
-  socket.on('disconnect', (socket) => {
-    console.log('disconnect');
-  })
+    socket.on("create-room", (roomId) => {
+        console.log(roomId + " -- group id");
+        io.emit("room-created", roomId);
+    });
+
+    socket.on("join", (room_id, user_id) => {
+        console.log(room_id + " -- join");
+        socket.join(room_id);
+    });
+
+    socket.on("typing", (data) => {
+        if (data.typing == true) io.emit("display", data);
+        else io.emit("display", data);
+    });
+
+    //lisen from client
+    socket.on("sendChatToServer", function (data) {
+        var today = new Date();
+        var date =
+            today.getFullYear() +
+            "-" +
+            (today.getMonth() + 1) +
+            "-" +
+            today.getDate();
+        var time =
+            today.getHours() +
+            ":" +
+            today.getMinutes() +
+            ":" +
+            today.getSeconds();
+        var dateTime = date + " " + time;
+
+        var insertMessage =
+            "insert into messages (group_id, user_id, message, created_at, updated_at) values (" +
+            data.receiver +
+            "," +
+            data.sender +
+            ",'" +
+            data.message +
+            "','" +
+            dateTime +
+            "','" +
+            dateTime +
+            "')";
+        console.log(insertMessage);
+        con.query(insertMessage, function (err, result) {
+            if (err) throw err;
+            console.log(result.affectedRows + " record(s) insert");
+        });
+
+        io.to(data.receiver).emit("sendChatToClient", data);
+    });
+
+    socket.on("disconnect", (socket) => {
+        console.log("disconnect");
+    });
 });
 
 server.listen(3000, () => {
-  console.log('listening on *:3000');
+    console.log("listening on *:3000");
 });

@@ -25,6 +25,7 @@ use App\Http\Controllers\web\AudioTagController;
 use App\Http\Controllers\web\AudioController;
 use App\Http\Controllers\web\GroupController;
 use App\Http\Controllers\web\TripJournalController;
+use App\Models\Group;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,6 +42,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/test', function () {
+    $groups = Group::all();
+    return view('chat.group', compact('groups'));
+});
+
 
 Route::get('logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth'); 
 
@@ -71,6 +78,9 @@ Route::controller(DashboardController::class)->group(function(){
 });
 
 Route::group(['middleware' => ['auth']], function () {
+
+    Route::get('/chat/{group_id}', [App\Http\Controllers\ChatTestController::class, 'chat'])->name('chat');
+    
     Route::controller(CustomerController::class)
     ->prefix('users')
     ->group(function(){
