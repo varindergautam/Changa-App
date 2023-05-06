@@ -41,8 +41,10 @@ class LearnController extends BaseController
                 $description = strip_tags(html_entity_decode($learn->description));
                 $users[$key]['description'] = strip_tags(nl2br($description));
                 $users[$key]['file'] = asset('/storage/file/'. $learn->file);
-                $users[$key]['user']['profile_pic'] = !empty($learn->profile_pic) ? asset('/storage/profile_pic/'. $learn->profile_pic) : null;
-                $users[$key]['user']['background_image'] = !empty($learn->background_image) ? asset('/storage/file/'. $learn->background_image) : null;
+                $users[$key]['url'] = url('/api/learn/learn?id=' . $learn->id);
+                $users[$key]['created_date'] = ChangaAppHelper::dateFormat($learn->created_at);
+                $users[$key]['user']['profile_pic'] = !empty($learn->user->profile_pic) ? asset('/storage/profile_pic/'. $learn->user->profile_pic) : null;
+                $users[$key]['user']['background_image'] = !empty($learn->user->background_image) ? asset('/storage/file/'. $learn->user->background_image) : null;
 
                 $arr = [];
                 foreach($learn->learnTagMulti as $tag) {

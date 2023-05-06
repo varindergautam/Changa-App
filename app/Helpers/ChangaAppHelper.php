@@ -3,6 +3,7 @@ namespace App\Helpers;
 
 use App\Models\User;
 use App\Models\UserDeviceToken;
+use Carbon\Carbon;
 
 class ChangaAppHelper 
 {
@@ -105,7 +106,7 @@ class ChangaAppHelper
 
                  $result = curl_exec($ch);
                  \Log::info('Remainder Notification ANDROID.');
-                // print_r($result);die('and');
+                print_r($result);die('and');
                  curl_close($ch);
             }
             else
@@ -152,4 +153,7 @@ class ChangaAppHelper
         }
     }
 
+    public static function dateFormat($date) {
+        return Carbon::parse($date)->format('d M, Y');
+    }
 }

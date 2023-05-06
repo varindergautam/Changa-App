@@ -9,6 +9,9 @@ use App\Mail\BasicMail;
 use App\Mail\OtpMail;
 use App\Mail\SendOtpMail;
 use Validator;
+use App\Models\BeginTripe;
+use App\Models\BeginTripMemo;
+use App\Models\BeignTripNowFeel;
 use Mail;
 use App\Models\User;
 use App\Models\UserDeviceToken;
@@ -594,4 +597,16 @@ class AuthController extends BaseController {
        
     }
 
+    public function accountDelete() {
+        $user = User::find(auth()->user()->id);
+        UserDeviceToken::where('user_id', auth()->user()->id)->delete();
+        UserNotificationSetting::where('user_id', auth()->user()->id)->delete();
+        $beginTrip = BeginTripe::where('user_id', auth()->user()->id);
+        BeginTripMemo::where('begin_tripe_id', $beginTrip->id)->delete();
+        BeignTripNowFeel::where('begin_tripe_id', $beginTrip->id)->delete();
+        $beginTrip->delete();
+        Auth::user()->api_token->delete();
+        $user->delete();
+        return $this->sendResponse(null, 'Account Deleted Successfully');
+    }
 }

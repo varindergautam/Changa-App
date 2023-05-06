@@ -38,8 +38,10 @@ class ListenController extends BaseController
                 $description = strip_tags(html_entity_decode($listen->description));
                 $users[$key]['description'] = strip_tags(nl2br($description));
                 $users[$key]['file'] = asset('/storage/file/'. $listen->file);
-                $users[$key]['user']['profile_pic'] = !empty($listen->profile_pic) ? asset('/storage/profile_pic/'. $listen->profile_pic) : null;
-                $users[$key]['user']['background_image'] = !empty($listen->background_image) ? asset('/storage/file/'. $listen->background_image) : null;
+                $users[$key]['url'] = url('/api/listen/listen?id=' . $listen->id);
+                $users[$key]['created_date'] = ChangaAppHelper::dateFormat($listen->created_at);
+                $users[$key]['user']['profile_pic'] = !empty($listen->user->profile_pic) ? asset('/storage/profile_pic/'. $listen->user->profile_pic) : null;
+                $users[$key]['user']['background_image'] = !empty($listen->user->background_image) ? asset('/storage/file/'. $listen->user->background_image) : null;;
 
                 $arr = [];
                 foreach($listen->listenTagMulti as $tag) {

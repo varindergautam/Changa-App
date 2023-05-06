@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('otp_verification', [AuthController::class, 'otpVerification']);
     Route::post('resetPassword', [AuthController::class, 'resetPassword']);
     Route::post('updateProfile', [AuthController::class, 'updateProfile']);
+    Route::get('accountDelete', [AuthController::class, 'accountDelete']);
 
     Route::controller(LearnController::class)
     ->prefix('learn')

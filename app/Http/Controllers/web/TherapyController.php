@@ -86,10 +86,10 @@ class TherapyController extends Controller
     public function edit($id)
     {
         try{
-            $tags = TherapyTag::get();
-            $user = Therapy::where('id',$id)->first();
-            $multi = TherapyTagMulti::where('therapy_id',$id)->get()->pluck('therapy_tag_id')->toArray();
-            return view('admin.therapy.edit', compact('user', 'tags', 'mutli'));
+            $data['tags'] = TherapyTag::get();
+            $data['user'] = Therapy::where('id',$id)->first();
+            $data['multi'] = TherapyTagMulti::where('therapy_id',$id)->get()->pluck('therapy_tag_id')->toArray();
+            return view('admin.therapy.edit', $data);
         } catch(\Throwable $e){
             return view('admin.therapy.edit')->with('error',$e);
         }

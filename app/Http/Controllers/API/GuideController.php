@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Helpers\ChangaAppHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Guide;
 use App\Models\GuideCategory;
@@ -37,6 +38,7 @@ class GuideController extends BaseController
             }
             if($mediate_tags->count() > 0) {
                 foreach($mediate_tags as $key => $mediate_tag) {
+                    $mediate_tags[$key]['created_date'] = ChangaAppHelper::dateFormat($mediate_tag->created_at);
                     $mediate_tags[$key]['file'] = !empty($mediate_tag->file) ? asset('/storage/file/'. $mediate_tag->file) : null;
                     $mediate_tags[$key]['guideCategory']['file'] = !empty($mediate_tag->guideCategory->file) ? asset('/storage/file/'. $mediate_tag->guideCategory->file) : null;
                 }

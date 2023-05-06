@@ -25,7 +25,7 @@ class UsersController extends Controller
         try {
             $credentials = $request->except(['_token']);
             if (Auth::attempt($credentials)) {
-                if(auth()->user()->user_type == 1){die('oko');
+                if(auth()->user()->user_type == 1){
                     return redirect()->route('dashboard');
                 }
                 else{
