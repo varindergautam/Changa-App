@@ -120,7 +120,6 @@ class BeginTripController extends BaseController
         }
     }
 
-
     public function store(Request $request) {
         try {
             $userID = auth('sanctum')->user()->id;
@@ -251,7 +250,16 @@ class BeginTripController extends BaseController
             return $this->sendResponse( $beginTripes, 'Success' );
         }
         catch (\Exception $ex) {
-            return $this->sendResponse( $ex->getMessage(), 'something went wrong');
+            return $this->sendError( $ex->getMessage(), 'something went wrong');
+        }
+    }
+
+    public function history() {
+        try {
+            $history = BeginTripe::where('user_id', auth('sanctum')->user()->id)->count();
+            return $this->sendResponse( $history, 'Success' );
+        } catch (\Throwable $th) {
+            return $this->sendError( $th->getMessage(), 'something went wrong');
         }
     }
 }

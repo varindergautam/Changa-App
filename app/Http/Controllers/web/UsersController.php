@@ -25,10 +25,11 @@ class UsersController extends Controller
         try {
             $credentials = $request->except(['_token']);
             if (Auth::attempt($credentials)) {
-                if(Auth::user()->user_type == 1){
+                if(auth()->user()->user_type == 1){die('oko');
                     return redirect()->route('dashboard');
                 }
                 else{
+                    Auth::logout();
                     return back()->withInput()->with('error','Credential not matched');
                 }
                 // return response()->json(['message' => 'You have successfull login', 'redirect' => route('dashboard'), 'status' => true]);

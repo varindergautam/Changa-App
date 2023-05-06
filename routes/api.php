@@ -110,6 +110,7 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('/visual','visual')->name('visual');
         Route::get('/audio','audio')->name('audio');
         Route::get('/audio-tag','audioTag')->name('audioTag');
+        Route::get('/history','history')->name('history');
     });
 });
 
