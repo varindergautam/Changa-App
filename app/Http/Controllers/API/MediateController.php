@@ -106,7 +106,7 @@ class MediateController extends BaseController
             }
 
             $Learn->file = asset('/storage/file/'. $Learn->file);
-            $Learn->background_image = asset('/storage/file/'. $Learn->background_image);
+            $Learn->background_image = !empty($Learn->background_image) ? asset('/storage/file/'. $Learn->background_image) : NULL;
  
             $pushNotificationData['message'] = $Learn->title;
             $pushNotificationData['id'] = $Learn->id;
@@ -127,13 +127,13 @@ class MediateController extends BaseController
 
     public function validationForStore($request)
     {
-        $file = 'required|mimetypes:image/jpeg,image/png,image/gif,video/webm,video/mp4,audio/mp3';
+        $file = 'required|mimetypes:image/jpeg,image/png,image/gif,video/webm,video/mp4,audio/mpeg,mpga,mp3,wav';
         return [
             'tag' => 'required',
             'title' => 'required|unique:mediates,title,'. $request->id,
             'description' => 'required',
             'file' => $file,
-            'background_image' => 'required|mimetypes:image/jpeg,image/png,image/jpg',
+            // 'background_image' => 'required|mimetypes:image/jpeg,image/png,image/jpg',
         ];
     }
 

@@ -58,15 +58,6 @@ class TherapyController extends BaseController
     }
 
     public function store(Request $request) {
-        $pushNotificationData['message'] = '$Learn->title';
-            $pushNotificationData['id'] = '$Learn->id';
-            $pushNotificationData['notification_type'] = 'therapy';
-            $users = User::where('user_type', config('userTypes.user'))->get()->pluck('id');
-            if(isset($users)) {
-                foreach($users as $user) {
-                    ChangaAppHelper::sendNotication($user, $pushNotificationData);
-                }
-            }
         try {
             if($request->id && !Therapy::find($request->id)) {
                 return $this->sendError('not found', [] );
@@ -129,7 +120,7 @@ class TherapyController extends BaseController
 
             
             $Learn->file = asset('/storage/file/'. $Learn->file);
-            $Learn->background_image = asset('/storage/file/'. $Learn->background_image);
+            $Learn->background_image = !empty($Learn->background_image) ? asset('/storage/file/'. $Learn->background_image) : NULL;
 
             return $this->sendResponse( $Learn, 'Success' );
 
@@ -140,13 +131,13 @@ class TherapyController extends BaseController
 
     public function validationForStore($request)
     {
-        $file = 'required|mimetypes:image/jpeg,image/png,image/gif,video/webm,video/mp4,audio/mp3';
+        $file = 'required|mimetypes:image/jpeg,image/png,image/gif,video/webm,video/mp4,audio/mpeg,mpga,mp3,wav';
         return [
             'tag' => 'required',
             'title' => 'required|unique:therapies,title,'. $request->id,
             'description' => 'required',
             'file' => $file,
-            'background_image' => 'required|mimetypes:image/jpeg,image/png,image/jpg',
+            // 'background_image' => 'required|mimetypes:image/jpeg,image/png,image/jpg',
         ];
     }
 

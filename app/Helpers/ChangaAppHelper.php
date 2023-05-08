@@ -106,7 +106,7 @@ class ChangaAppHelper
 
                  $result = curl_exec($ch);
                  \Log::info('Remainder Notification ANDROID.');
-                print_r($result);die('and');
+                // print_r($result);die('and');
                  curl_close($ch);
             }
             else
