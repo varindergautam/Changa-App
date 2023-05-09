@@ -163,7 +163,7 @@ class BeginTripController extends BaseController
             $memoArr = [
                 'begin_tripe_id' => $beginTrip->id,
                 'voice_memo' => @$fileName,
-                'file_type' => @$fileType,
+                'file_type' => $request->file_type,
                 'guide_id' => $request->guide_id,
                 'time_of_recording' => $request->time_of_recording_memo,
             ];
