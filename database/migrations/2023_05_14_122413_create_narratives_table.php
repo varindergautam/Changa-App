@@ -13,16 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('notifications', function (Blueprint $table) {
+        Schema::create('narratives', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
-            $table->string('notifiable_type');
-            $table->integer('notifiable_id');
-            $table->text('data');
-            $table->timestamp('read_at')->nullable();
+            $table->integer('user_id');
+            $table->string('narrative')->nullable();
             $table->timestamps();
-            $table->softDeletes();
-           
         });
     }
 
@@ -33,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('notifications');
+        Schema::dropIfExists('narratives');
     }
 };

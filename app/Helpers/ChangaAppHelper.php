@@ -1,7 +1,6 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\User;
 use App\Models\UserDeviceToken;
 use Carbon\Carbon;
 
@@ -69,6 +68,7 @@ class ChangaAppHelper
     public static function sendNotication($notifcationUserId, $data)
     {
         $user = UserDeviceToken::where('user_id', $notifcationUserId)->first();
+        
         if ($user && !is_null($user->device_token) && !is_null($user->device_type)) {
 
             $device_token = $user->device_token;
@@ -82,11 +82,11 @@ class ChangaAppHelper
                      // 'smallIcon' => 'small_icon',
                      // 'sound' => 'default',
                      // 'badge' => 1,
-                     // 'notification_type' => $data['notification_type'],
+                     // 'notifiable_type' => $data['notifiable_type'],
                      // 'id' => $data['id'],
                  );
 
-                 $extraData = ['notification_type' => $data['notification_type'],
+                 $extraData = ['notifiable_type' => $data['notifiable_type'],
                      'id' => $data['id']];
 
                  $fcmFields = ['to' => $device_token, 'notification' => $fcmMsg, 'data' => $extraData];
@@ -121,11 +121,11 @@ class ChangaAppHelper
                      // 'smallIcon' => 'small_icon',
                      // 'sound' => 'default',
                      // 'badge' => 1,
-                     // 'notification_type' => $data['notification_type'],
+                     // 'notifiable_type' => $data['notifiable_type'],
                      // 'remainder_id' => $data['remainder_id'],
                  );
 
-                 $extraData = ['notification_type' => $data['notification_type'],
+                 $extraData = ['notifiable_type' => $data['notifiable_type'],
                      'remainder_id' => $data['remainder_id']];
 
                  $fcmFields = ['to' => $device_token, 'notification' => $fcmMsg, 'data' => $extraData];

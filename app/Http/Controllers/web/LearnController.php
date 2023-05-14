@@ -9,7 +9,9 @@ use App\Http\Controllers\Controller;
 use App\Models\LearnTag;
 use App\Models\Learn;
 use App\Models\LearnTagMulti;
+use App\Models\Notifications;
 use App\Models\User;
+use App\Models\UserNotificationSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -159,14 +161,29 @@ class LearnController extends Controller
 
             $pushNotificationData['message'] = $learn->title;
             $pushNotificationData['id'] = $learn->id;
-            $pushNotificationData['notification_type'] = 'therapy';
+            $pushNotificationData['notifiable_type'] = 'learn_create';
+            if($request->id) {
+                $pushNotificationData['notifiable_type'] = 'learn_update';
+            }
             $users = User::where('user_type', config('userTypes.user'))->get()->pluck('id');
             if(isset($users)) {
                 foreach($users as $user) {
-                    ChangaAppHelper::sendNotication($user, $pushNotificationData);
+                    $data['notifiable_id'] = $user;
+                    $data['notifiable_type'] = $pushNotificationData['notifiable_type'];
+                    $data['type'] = $pushNotificationData['notifiable_type'];
+                    $data['data'] = $pushNotificationData['message'];
+                    Notifications::saveNotification($data);
+
+                    $setting = UserNotificationSetting::where('user_id', $user)->first();
+        
+                    if(isset($setting) && $setting->new_content == '1') {
+                        ChangaAppHelper::sendNotication($user, $pushNotificationData);
+                    } else if(isset($setting) && $setting->trip_update == '1') {
+                        ChangaAppHelper::sendNotication($user, $pushNotificationData);
+                    }
                 }
             }
-
+         
             $valid = true;
             $message = "Learn created successfully";
             if($request->id) {

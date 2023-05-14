@@ -68,4 +68,8 @@ class User extends Authenticatable
     public function userNotificationSetting() {
         return $this->hasOne('App\Models\UserNotificationSetting', 'user_id');
     }
+
+    public function unreadNotification() {
+        return $this->hasMany('App\Models\Notifications', 'notifiable_id')->whereNull('read_at');
+    }
 }

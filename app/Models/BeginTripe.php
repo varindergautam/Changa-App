@@ -27,4 +27,12 @@ class BeginTripe extends Model
         'trip_icon',
         'day'
     ];
+
+    public function beginTripMemo() {
+        return $this->hasMany('App\Models\BeginTripMemo');
+    }
+
+    public function beginTripNowFeel() {
+        return $this->hasOne('App\Models\BeignTripNowFeel', 'beign_trip_id');
+    }
 }

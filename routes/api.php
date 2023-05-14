@@ -6,7 +6,7 @@ use App\Http\Controllers\API\ListenController;
 use App\Http\Controllers\API\TherapyController;
 use App\Http\Controllers\API\MediateController;
 use App\Http\Controllers\API\ChatController;
-use App\Http\Controllers\API\AuthOtpController;
+use App\Http\Controllers\API\NarrativeController;
 use App\Http\Controllers\API\FavouriteController;
 use App\Http\Controllers\API\GuideController;
 use App\Http\Controllers\API\BeginTripController;
@@ -40,6 +40,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('resetPassword', [AuthController::class, 'resetPassword']);
     Route::post('updateProfile', [AuthController::class, 'updateProfile']);
     Route::get('accountDelete', [AuthController::class, 'accountDelete']);
+    Route::get('notification', [AuthController::class, 'notification']);
+    Route::post('readNotification', [AuthController::class, 'readNotification']);
 
     Route::controller(LearnController::class)
     ->prefix('learn')
@@ -112,6 +114,15 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('/audio','audio')->name('audio');
         Route::get('/audio-tag','audioTag')->name('audioTag');
         Route::get('/history','history')->name('history');
+    });
+
+    Route::controller(NarrativeController::class)
+    ->prefix('narrative')
+    ->group(function(){
+        Route::get('/','index')->name('narrative');
+        Route::post('/store','store')->name('narrative.store');
+        Route::post('/update','store')->name('narrative.update');
+        Route::post('/delete','delete')->name('narrative.delete');
     });
 });
 

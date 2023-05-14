@@ -19,6 +19,7 @@ use App\Models\VerificationCode;
 use App\Models\UserNotificationSetting;
 use Carbon\Carbon;
 use App\Mail\UserRegisterMail;
+use App\Models\Notifications;
 use Carbon\Exceptions\Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -385,7 +386,7 @@ class AuthController extends BaseController {
                 $login_type = 'username';
             }
             
-            $user = User::where([$login_type => $request->email])->first();
+            $user = User::withCount('unreadNotification')->where([$login_type => $request->email])->first();
             if(empty($user)) {
                 return $this->sendError('User not found');
             }
@@ -424,7 +425,6 @@ class AuthController extends BaseController {
                 $user->user_device_token = $user_device_token;
                 $success[ 'login_user_data' ] = $user;
                 $success[ 'token' ] = $token;
-            
 
                 return $this->sendResponse( $success, 'Login Done' );
             }
@@ -608,5 +608,36 @@ class AuthController extends BaseController {
         Auth::user()->api_token->delete();
         $user->delete();
         return $this->sendResponse(null, 'Account Deleted Successfully');
+    }
+
+    public function readNotification(Request $request) {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required',
+            ]);
+            if($validator->fails()){
+                return $this->sendError($validator->errors()->all());
+            }
+            $notification = Notifications::where('id', $request->id)->update(['read_at'=> Carbon::now()]);
+            if(!$notification) {
+                return $this->sendError("No data found");
+            }
+            return $this->sendResponse($notification, 'success');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function notification() {
+        try {
+            $notification = Notifications::where('notifiable_id', auth()->user()->id)->get();
+            if($notification) {
+                return $this->sendResponse($notification, 'success');
+            } else {
+                return $this->sendError("No data found");
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }
