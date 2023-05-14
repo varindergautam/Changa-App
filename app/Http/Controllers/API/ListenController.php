@@ -171,4 +171,38 @@ class ListenController extends BaseController
             return $this->sendResponse( $ex->getMessage(), 'something went wrong');
         }
     }
+
+    public function favourite(Request $request) {
+        $users = Listen::with('user', 'listenTagMulti', 'favourite')->whereHas('favourite')->get();
+        if($request->id) {
+            $users = Listen::where('id', $request->id)->with('listenTagMulti', 'user', 'favourite')->whereHas('favourite')->get();
+        }
+
+        if($request->tag_id) {
+            $multi = ListenTagMulti::where('listen_tag_id', $request->tag_id)->get()->pluck('listen_id')->toArray();
+            $users = Listen::with('listenTagMulti','user', 'favourite')->whereHas('favourite')->whereIn('id', $multi)->get();
+        }
+
+        if($users->count() > 0) {
+            foreach($users as $key => $listen) {
+                $description = strip_tags(html_entity_decode($listen->description));
+                $users[$key]['description'] = strip_tags(nl2br($description));
+                $users[$key]['file'] = asset('/storage/file/'. $listen->file);
+                $users[$key]['url'] = url('/api/listen/listen?id=' . $listen->id);
+                $users[$key]['created_date'] = ChangaAppHelper::dateFormat($listen->created_at);
+                $users[$key]['user']['profile_pic'] = !empty($listen->user->profile_pic) ? asset('/storage/profile_pic/'. $listen->user->profile_pic) : null;
+                $users[$key]['user']['background_image'] = !empty($listen->user->background_image) ? asset('/storage/file/'. $listen->user->background_image) : null;;
+
+                $arr = [];
+                foreach($listen->listenTagMulti as $tag) {
+                    $arr[] = ListenTag::where('id', $tag->listen_tag_id)->get()->toArray();
+                }
+                $users[$key]['listen_tag'] = $arr;
+            }
+            $success[ 'data' ] = $users;
+            return $this->sendResponse( $users, 'Success' );
+        } else {
+            return $this->sendResponse( [], 'No Data found');
+        }
+    }
 }

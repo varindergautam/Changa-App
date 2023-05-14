@@ -173,5 +173,40 @@ class TherapyController extends BaseController
             return $this->sendResponse( $ex->getMessage(), 'something went wrong');
         }
     }
+
+    public function favourite(Request $request) {
+        $users = Therapy::with('therapyTagMulti', 'user', 'favourite')->whereHas('favourite')->get();
+
+        if($request->id) {
+            $users = Therapy::where('id', $request->id)->with('therapyTagMulti', 'user', 'favourite')->whereHas('favourite')->get();
+        }
+
+        if($request->tag_id) {
+            $multi = TherapyTagMulti::where('therapy_id', $request->tag_id)->get()->pluck('therapy_id')->toArray();
+            $users = Therapy::with('therapyTagMulti','user', 'favourite')->whereHas('favourite')->whereIn('id', $multi)->get();
+        }
+
+        if($users->count() > 0) {
+            foreach($users as $key => $mediate) {
+                $description = strip_tags(html_entity_decode($mediate->description));
+                $users[$key]['description'] = strip_tags(nl2br($description));
+                $users[$key]['created_date'] = ChangaAppHelper::dateFormat($mediate->created_at);
+                $users[$key]['url'] = url('/api/therapy/therapy?id=' . $mediate->id);
+                $users[$key]['file'] = asset('/storage/file/'. $mediate->file);
+                $users[$key]['user']['profile_pic'] = !empty($mediate->user->profile_pic) ? asset('/storage/profile_pic/'. $mediate->user->profile_pic) : null;
+
+                $users[$key]['user']['background_image'] = !empty($mediate->user->background_image) ? asset('/storage/file/'. $mediate->user->background_image) : null;
+
+                $arr = [];
+                foreach($mediate->therapyTagMulti as $tag) {
+                    $arr[] = TherapyTag::where('id', $tag->therapy_tag_id)->get()->toArray();
+                }
+                $users[$key]['therapy_tag'] = $arr;
+            }
+            return $this->sendResponse( $users, 'Success' );
+        } else {
+            return $this->sendResponse( [], 'No Data found');
+        }
+    }
 }
 

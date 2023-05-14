@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('learn','learn')->name('learn');
         Route::post('store','store')->name('learn.store');
         Route::post('destroy','destroy')->name('learn.destroy');
+        Route::get('favourite','favourite')->name('learn.favourite');
     });
 
     Route::controller(ListenController::class)
@@ -59,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('listen','listen')->name('listen');
         Route::post('store','store')->name('listen.store');
         Route::post('destroy','destroy')->name('listen.destroy');
+        Route::get('favourite','favourite')->name('listen.favourite');
     });
 
     Route::controller(TherapyController::class)
@@ -68,6 +70,7 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('therapy','therapy')->name('therapy');
         Route::post('store','store')->name('therapy.store');
         Route::post('destroy','destroy')->name('therapy.destroy');
+        Route::get('favourite','favourite')->name('therapy.favourite');
     });
 
     Route::controller(MediateController::class)
@@ -77,6 +80,8 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('mediate','mediate')->name('mediate');
         Route::post('store','store')->name('mediate.store');
         Route::post('destroy','destroy')->name('mediate.destroy');
+        Route::get('favourite','favourite')->name('mediate.favourite');
+
     });
 
     Route::controller(ChatController::class)

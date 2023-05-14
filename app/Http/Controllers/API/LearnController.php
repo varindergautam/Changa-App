@@ -174,4 +174,40 @@ class LearnController extends BaseController
             return $this->sendResponse( $ex->getMessage(), 'something went wrong');
         }
     }
+
+    public function favourite(Request $request) {
+        $users = Learn::with('learnTagMulti', 'user', 'favourite')->whereHas('favourite')->get();
+        
+        if($request->id) {
+            $users = Learn::where('id', $request->id)->with('learnTagMulti', 'user', 'favourite')->whereHas('favourite')->get();
+        }
+
+        if($request->tag_id) {
+            $multi = LearnTagMulti::where('learn_tag_id', $request->tag_id)->get()->pluck('learn_id')->toArray();
+            $users = Learn::with('learnTagMulti','user', 'favourite')->whereHas('favourite')->whereIn('id', $multi)->get();
+        }
+
+        if($users->count() > 0) {
+            foreach($users as $key => $learn) {
+                
+                // $users[$key]['description'] = stripslashes(html_entity_decode(strip_tags($learn->description)));
+                $description = strip_tags(html_entity_decode($learn->description));
+                $users[$key]['description'] = strip_tags(nl2br($description));
+                $users[$key]['file'] = asset('/storage/file/'. $learn->file);
+                $users[$key]['url'] = url('/api/learn/learn?id=' . $learn->id);
+                $users[$key]['created_date'] = ChangaAppHelper::dateFormat($learn->created_at);
+                $users[$key]['user']['profile_pic'] = !empty($learn->user->profile_pic) ? asset('/storage/profile_pic/'. $learn->user->profile_pic) : null;
+                $users[$key]['user']['background_image'] = !empty($learn->user->background_image) ? asset('/storage/file/'. $learn->user->background_image) : null;
+
+                $arr = [];
+                foreach($learn->learnTagMulti as $tag) {
+                    $arr[] = LearnTag::where('id', $tag->learn_tag_id)->get()->toArray();
+                }
+                $users[$key]['learn_tag'] = $arr;
+            }
+            return $this->sendResponse( $users, 'Success' );
+        } else {
+            return $this->sendResponse( [], 'No Data found');
+        }
+    }
 }

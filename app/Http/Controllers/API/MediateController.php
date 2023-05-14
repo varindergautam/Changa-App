@@ -169,5 +169,39 @@ class MediateController extends BaseController
             return $this->sendResponse( $ex->getMessage(), 'something went wrong');
         }
     }
+
+    public function favourite(Request $request){
+        $users = Mediate::with('user', 'mediateTagMulti', 'favourite')->whereHas('favourite')->get();
+        if($request->id) {
+            $users = Mediate::where('id', $request->id)->with('mediateTagMulti', 'user', 'favourite')->whereHas('favourite')->get();
+        }
+
+        if($request->tag_id) {
+            $multi = MediateTagMulti::where('mediate_tag_id', $request->tag_id)->get()->pluck('mediate_id')->toArray();
+            $users = Mediate::with('mediateTagMulti','user', 'favourite')->whereHas('favourite')->whereIn('id', $multi)->get();
+        }
+
+        if($users->count() > 0) {
+            foreach($users as $key => $mediate) {
+                $description = strip_tags(html_entity_decode($mediate->description));
+                $users[$key]['description'] = strip_tags(nl2br($description));
+                $users[$key]['file'] = asset('/storage/file/'. $mediate->file);
+                $users[$key]['created_date'] = ChangaAppHelper::dateFormat($mediate->created_at);
+                $users[$key]['url'] = url('/api/mediate/mediate?id=' . $mediate->id);
+                $users[$key]['user']['profile_pic'] = !empty($mediate->user->profile_pic) ? asset('/storage/profile_pic/'. $mediate->user->profile_pic) : null;
+
+                $users[$key]['user']['background_image'] = !empty($mediate->user->background_image) ? asset('/storage/file/'. $mediate->user->background_image) : null;
+
+                $arr = [];
+                foreach($mediate->mediateTagMulti as $tag) {
+                    $arr[] = MediateTag::where('id', $tag->mediate_tag_id)->get()->toArray();
+                }
+                $users[$key]['mediate_tag'] = $arr;
+            }
+            return $this->sendResponse( $users, 'Success' );
+        } else {
+            return $this->sendResponse( [], 'No Data found');
+        }
+    }
 }
 
