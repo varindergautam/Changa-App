@@ -43,9 +43,9 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($users as $user)
+                                                    @foreach ($users as $key => $user)
                                                         <tr>
-                                                            <th scope="row">1</th>
+                                                            <th scope="row">{{$key+1}}</th>
                                                             <td>{{ $user->customer_id }}</td>
                                                             <td>{{ $user->created_at }}</td>
                                                             <td>{{ $user->first_name . ' ' . $user->last_name }}</td>
