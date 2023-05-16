@@ -25,7 +25,7 @@ class TherapyController extends Controller
     public function index()
     {
         try{
-            $users = Therapy::with('therapyTag')->get();
+            $users = Therapy::with('therapyTag')->paginate(env('PAGINATE'));
             if(count($users) > 0) {
                 foreach($users as $key => $user) {
                     $arr = [];

@@ -98,6 +98,7 @@
                                       @endforeach
                                     </tbody>
                                   </table>
+                                  {{ $users->links('pagination::bootstrap-4') }}
                                 </div>
                               </div>
                             </div>

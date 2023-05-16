@@ -23,7 +23,7 @@ class AudioController extends Controller
     public function index()
     {
         try{
-            $users = Audio::with('audioTag', 'audioTagMulti')->get();
+            $users = Audio::with('audioTag', 'audioTagMulti')->paginate(env('PAGINATE'));
 
             if(count($users) > 0) {
                 foreach($users as $key => $user) {

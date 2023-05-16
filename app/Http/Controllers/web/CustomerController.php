@@ -24,7 +24,7 @@ class CustomerController extends Controller
     public function index()
     {
         try{
-            $users = User::where(['user_type' => config('userTypes.user')])->get();
+            $users = User::where(['user_type' => config('userTypes.user')])->paginate(env('PAGINATE'));
             return view('admin.users.list')->with('users',$users);
         }catch(\Throwable $e){
             return  view('admin.users.list');

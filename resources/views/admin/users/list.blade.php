@@ -37,7 +37,7 @@
                                                     <tr>
                                                         <th scope="col">Sr. No.</th>
                                                         <th scope="col">Customer ID</th>
-                                                        <th scope="col">Created Date</th>
+                                                        {{-- <th scope="col">Created Date</th> --}}
                                                         <th scope="col">Customer Name</th>
                                                         <th scope="col">Email Address</th>
                                                         <th scope="col">Phone Number</th>
@@ -46,11 +46,11 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($users as $user)
+                                                    @foreach ($users as $key=> $user)
                                                         <tr>
-                                                            <th scope="row">1</th>
+                                                            <th scope="row">{{$key+1}}</th>
                                                             <td>{{ $user->customer_id }}</td>
-                                                            <td>{{ $user->created_at }}</td>
+                                                            {{-- <td>{{ $user->created_at }}</td> --}}
                                                             <td>{{ $user->first_name . ' ' . $user->last_name }}</td>
                                                             <td>{{ $user->email }}</td>
                                                             <td>{{ $user->phone }}</td>
@@ -101,8 +101,10 @@
                                                             </td>
                                                         </tr>
                                                     @endforeach
+                                                    
                                                 </tbody>
                                             </table>
+                                            {{ $users->links('pagination::bootstrap-4') }}
                                         </div>
                                     </div>
                                 </div>

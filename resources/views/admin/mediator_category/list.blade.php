@@ -50,6 +50,7 @@
                                       @endforeach
                                     </tbody>
                                   </table>
+                                  {{ $mediator_categories->links('pagination::bootstrap-4') }}
                                 </div>
                               </div>
                             </div>

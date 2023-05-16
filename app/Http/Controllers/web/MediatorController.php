@@ -24,7 +24,7 @@ class MediatorController extends Controller
     public function index()
     {
         try{
-            $users = User::where('user_type', config('userTypes.mediator'))->get();
+            $users = User::where('user_type', config('userTypes.mediator'))->paginate(env('PAGINATE'));
             return view('admin.mediator.list')->with('users',$users);
             }catch(\Throwable $e){
             return  view('admin.mediator.list');

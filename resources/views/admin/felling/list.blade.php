@@ -48,6 +48,7 @@
                                       @endforeach
                                     </tbody>
                                   </table>
+                                  {{ $mediate_tags->links('pagination::bootstrap-4') }}
                                 </div>
                               </div>
                             </div>

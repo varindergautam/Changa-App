@@ -13,7 +13,7 @@ class LearnTagsController extends Controller
     public function index()
     {
         try{
-            $mediate_tags = LearnTag::get();
+            $mediate_tags = LearnTag::paginate(env('PAGINATE'));
             return view('admin.learn_tags.list')->with('mediate_tags',$mediate_tags);
         }catch(\Throwable $e){
             return $e->getMessage();

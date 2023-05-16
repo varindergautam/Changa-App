@@ -13,7 +13,7 @@ class MediateTagsController extends Controller
     public function index()
     {
         try{
-            $mediate_tags = MediateTag::get();
+            $mediate_tags = MediateTag::paginate(env('PAGINATE'));
             return view('admin.mediate_tags.list')->with('mediate_tags',$mediate_tags);
         }catch(\Throwable $e){
             return $e->getMessage();

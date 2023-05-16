@@ -13,7 +13,7 @@ class TherapyTagsController extends Controller
     public function index()
     {
         try{
-            $mediate_tags = TherapyTag::get();
+            $mediate_tags = TherapyTag::paginate(env('PAGINATE'));
             return view('admin.therapy_tags.list')->with('mediate_tags',$mediate_tags);
         }catch(\Throwable $e){
             return $e->getMessage();

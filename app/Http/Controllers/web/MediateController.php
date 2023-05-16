@@ -25,7 +25,7 @@ class MediateController extends Controller
     public function index()
     {
         try{
-            $users = Mediate::with('mediateTagMulti')->get();
+            $users = Mediate::with('mediateTagMulti')->paginate(env('PAGINATE'));
             if(count($users) > 0) {
                 foreach($users as $key => $user) {
                     $arr = [];

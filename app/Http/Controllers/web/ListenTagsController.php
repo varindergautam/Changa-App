@@ -13,7 +13,7 @@ class ListenTagsController extends Controller
     public function index()
     {
         try{
-            $mediate_tags = ListenTag::get();
+            $mediate_tags = ListenTag::paginate(env('PAGINATE'));
             return view('admin.listen_tags.list')->with('mediate_tags',$mediate_tags);
         }catch(\Throwable $e){
             return $e->getMessage();

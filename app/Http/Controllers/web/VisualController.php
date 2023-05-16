@@ -20,7 +20,7 @@ class VisualController extends Controller
     public function index()
     {
         try{
-            $users = Visual::get();
+            $users = Visual::paginate(env('PAGINATE'));
             return view('admin.visual.list')->with('users',$users);
             }catch(\Throwable $e){
             return  $e;

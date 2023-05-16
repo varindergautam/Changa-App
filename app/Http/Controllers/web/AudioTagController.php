@@ -13,7 +13,7 @@ class AudioTagController extends Controller
     public function index()
     {
         try{
-            $mediate_tags = AudioTag::get();
+            $mediate_tags = AudioTag::paginate(env('PAGINATE'));
             return view('admin.audio_tags.list')->with('mediate_tags',$mediate_tags);
         }catch(\Throwable $e){
             return $e->getMessage();

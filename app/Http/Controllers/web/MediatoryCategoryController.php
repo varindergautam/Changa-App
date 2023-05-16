@@ -13,7 +13,7 @@ class MediatoryCategoryController extends Controller
     public function index()
     {
         try{
-            $mediator_categories = MediatorCategory::get();
+            $mediator_categories = MediatorCategory::paginate(env('PAGINATE'));
             return view('admin.mediator_category.list')->with('mediator_categories',$mediator_categories);
         }catch(\Throwable $e){
             $message = $e;

@@ -15,7 +15,7 @@ class GroupController extends Controller
     public function index()
     {
         try{
-            $mediate_tags = Group::get();
+            $mediate_tags = Group::paginate(env('PAGINATE'));
             return view('admin.group.list')->with('mediate_tags',$mediate_tags);
         }catch(\Throwable $e){
             return $e->getMessage();

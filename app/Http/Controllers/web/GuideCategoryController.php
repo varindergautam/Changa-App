@@ -20,7 +20,7 @@ class GuideCategoryController extends Controller
     public function index()
     {
         try{
-            $users = GuideCategory::get();
+            $users = GuideCategory::paginate(env('PAGINATE'));
             return view('admin.guide_category.list', compact('users'));
             }catch(\Throwable $e){
             return  $e;

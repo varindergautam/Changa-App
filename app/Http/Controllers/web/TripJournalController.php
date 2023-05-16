@@ -15,7 +15,7 @@ class TripJournalController extends Controller
     public function index()
     {
         try{
-            $users = TripJournal::get();
+            $users = TripJournal::paginate(env('PAGINATE'));
             return view('admin.trip_journal.list')->with('users',$users);
             }catch(\Throwable $e){
             return  $e;

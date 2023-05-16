@@ -14,7 +14,7 @@ class IntentionController extends Controller
     public function index()
     {
         try{
-            $mediate_tags = Intention::get();
+            $mediate_tags = Intention::paginate(env('PAGINATE'));
             return view('admin.intention.list')->with('mediate_tags',$mediate_tags);
         }catch(\Throwable $e){
             return $e->getMessage();

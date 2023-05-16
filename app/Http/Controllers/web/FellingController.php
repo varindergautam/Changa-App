@@ -14,7 +14,7 @@ class FellingController extends Controller
     public function index()
     {
         try{
-            $mediate_tags = Felling::get();
+            $mediate_tags = Felling::paginate(env('PAGINATE'));
             return view('admin.felling.list')->with('mediate_tags',$mediate_tags);
         }catch(\Throwable $e){
             return $e->getMessage();

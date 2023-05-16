@@ -21,7 +21,7 @@ class GuideController extends Controller
     public function index()
     {
         try{
-            $users = Guide::with('guideCategory')->get();
+            $users = Guide::with('guideCategory')->paginate(env('PAGINATE'));
             return view('admin.guide.list')->with('users',$users);
             }catch(\Throwable $e){
             return  $e;
