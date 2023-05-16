@@ -34,7 +34,7 @@
                                                     <tr>
                                                         <th scope="col">Sr. No.</th>
                                                         <th scope="col">Customer ID</th>
-                                                        <th scope="col">Created Date</th>
+                                                        {{-- <th scope="col">Created Date</th> --}}
                                                         <th scope="col">Name</th>
                                                         <th scope="col">Email</th>
                                                         <th scope="col">Phone No.</th>
@@ -47,7 +47,7 @@
                                                         <tr>
                                                             <th scope="row">{{$key+1}}</th>
                                                             <td>{{ $user->customer_id }}</td>
-                                                            <td>{{ $user->created_at }}</td>
+                                                            {{-- <td>{{ $user->created_at }}</td> --}}
                                                             <td>{{ $user->first_name . ' ' . $user->last_name }}</td>
                                                             <td>{{ $user->email }}</td>
                                                             <td>{{ $user->phone }}</td>
