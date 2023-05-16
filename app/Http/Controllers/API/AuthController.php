@@ -631,7 +631,7 @@ class AuthController extends BaseController {
     public function notification() {
         try {
             $notification = Notifications::where('notifiable_id', auth()->user()->id)->get();
-            if($notification) {
+            if(count($notification)>0) {
                 return $this->sendResponse($notification, 'success');
             } else {
                 return $this->sendError("No data found");
