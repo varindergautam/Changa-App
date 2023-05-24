@@ -44,6 +44,17 @@ Route::get('/', function () {
     //return view('welcome');
 });
 
+Route::get('/ip', function() {
+    ob_start(); // Turn on output buffering
+    system('ipconfig /all');
+    $mycom = ob_get_contents();
+    ob_clean();
+    $findme = "Physical";
+    $pmac = strpos($mycom, $findme);
+    $mac = substr($mycom,($pmac+36),17); 
+    return $mac;
+});
+
 Route::get('/test', function () {
     $groups = Group::all();
     return view('chat.group', compact('groups'));
