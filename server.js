@@ -6,9 +6,9 @@ var mysql = require("mysql");
 
 var con = mysql.createConnection({
     host: "localhost",
-    user: "root",
-    password: "",
-    database: "apk_changa_app",
+    user: "changa_app",
+    password: "changaapp@6633",
+    database: "changa_app",
 });
 
 con.connect(function (err) {
