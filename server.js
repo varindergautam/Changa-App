@@ -4,12 +4,13 @@ const app = express();
 const server = require("http").createServer(app);
 var mysql = require("mysql");
 var mysql2 = require("mysql2");
+require('dotenv').config();
 
 var con = mysql2.createConnection({
     host: "localhost",
-    user: "changa_app",
-    password: "changaapp@6633",
-    database: "changa_app",
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
 });
 
 con.connect(function (err) {
