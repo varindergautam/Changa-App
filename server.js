@@ -3,8 +3,9 @@ const app = express();
 // const http = require('http');
 const server = require("http").createServer(app);
 var mysql = require("mysql");
+var mysql2 = require("mysql2");
 
-var con = mysql.createConnection({
+var con = mysql2.createConnection({
     host: "localhost",
     user: "changa_app",
     password: "changaapp@6633",
