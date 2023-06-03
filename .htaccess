@@ -3,4 +3,6 @@
     RewriteBase /
     RewriteRule ^$ public/index.php [L]
     RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
+    RewriteCond %{HTTPS} off 
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
