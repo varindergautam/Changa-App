@@ -10,7 +10,7 @@
 
 <body>
     <input type="hidden1" name="senderId" id="senderId" value="{{ Auth::user()->id }}">
-    <input type="hidden1" name="recieverId" id="recieverId" value="{{ isset($group_id) ? $group_id : '' }}">
+    <input type="hidden1" name="recieverId" id="recieverId" value="{{ isset($group_id) ? $group_id : 1 }}">
     <input type="hidden1" name="" id="username" value="{{ Auth::user()->first_name }}">
 
     <div id="chat-box"></div>
