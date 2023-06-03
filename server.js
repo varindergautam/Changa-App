@@ -17,6 +17,10 @@ con.connect(function (err) {
     if (err) throw err;
 });
 
+app.get('/', (req, res) => {
+    res.send('node working');
+});
+
 const io = require("socket.io")(server, {
     cors: { origin: "*", reconnect: true, rejectUnauthorized: false },
 });
