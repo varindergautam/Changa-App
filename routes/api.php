@@ -10,6 +10,7 @@ use App\Http\Controllers\API\NarrativeController;
 use App\Http\Controllers\API\FavouriteController;
 use App\Http\Controllers\API\GuideController;
 use App\Http\Controllers\API\BeginTripController;
+use App\Http\Controllers\API\PageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -129,8 +130,15 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('/update','store')->name('narrative.update');
         Route::post('/delete','delete')->name('narrative.delete');
     });
+
 });
 
+Route::controller(PageController::class)
+    ->prefix('page')
+    ->group(function(){
+        Route::get('/terms','termsConditions')->name('terms');
+        Route::get('/policy','privacyPolicy')->name('policy');
+    });
 
 // Route::controller(AuthOtpController::class)->group(function(){
 //     Route::get('/otp/login', 'login')->name('otp.login');

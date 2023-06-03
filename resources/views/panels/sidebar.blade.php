@@ -252,6 +252,13 @@
                 </li>
             </ul>
         </li>
+
+        <li>
+            <a href="{{ route('page') }}"
+                class=" nav-link {{ Request::segment(1) == 'page' ? 'active' : '' }}">
+                <i class="zmdi zmdi-account-circle"></i><span>Term & Policy</span>
+            </a>
+        </li>
     </ul>
 </div>
 
