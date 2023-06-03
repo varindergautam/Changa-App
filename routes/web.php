@@ -351,6 +351,12 @@ Route::group(['middleware' => ['auth']], function () {
     });
 });
 
+Route::controller(PageController::class)
+    ->group(function(){
+        Route::get('/term','term');
+        Route::get('/policy','policy');
+    });
+
 // Route::get('registration', [RegistrationController::class, 'index'])->name('registration');
 // Route::get('login', [LoginController::class, 'index'])->name('login');
 Route::get('profile', [ProfileController::class, 'index'])->name('profile');

@@ -56,4 +56,14 @@ class PageController extends Controller
         return back();
 
     }
+
+    public function term() {
+        $terms = Page::where('page_name','terms-and-conditions')->first();
+        return view('admin.page.term', compact('terms'));
+    }
+
+    public function policy() {
+        $terms = Page::where('page_name','privacy-policy')->first();
+        return view('admin.page.term', compact('terms'));
+    }
 }
