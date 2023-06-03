@@ -39,7 +39,7 @@
         var socketId = '';
         // let socket = io(ip_address + ':' + socket_port);
         var link = '{{env('NODE_LINK')}}';
-        let socket = io(link);
+        let socket = io(link,{secure: true});
         socket.on('connect', () => {
             socketId = socket.id;
             console.log(socketId + 'socketId');
