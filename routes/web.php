@@ -24,6 +24,7 @@ use App\Http\Controllers\web\VisualController;
 use App\Http\Controllers\web\AudioTagController;
 use App\Http\Controllers\web\AudioController;
 use App\Http\Controllers\web\GroupController;
+use App\Http\Controllers\web\PageController;
 use App\Http\Controllers\web\TripJournalController;
 use App\Models\Group;
 use Illuminate\Support\Facades\Route;
@@ -339,6 +340,14 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('view/{id}','show')->name('show.trip_journal');
         Route::get('delete/{id}','destroy')->name('delete.trip_journal');
         Route::get('status/{id}/{status}','status')->name('status.trip_journal');
+    });
+
+    Route::controller(PageController::class)
+    ->prefix('page')
+    ->group(function(){
+        Route::get('/','index')->name('page');
+        Route::post('saveTerms','saveTerms')->name('saveTerms.page');
+        Route::post('savePolicy','savePolicy')->name('savePolicy.page');
     });
 });
 
