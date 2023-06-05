@@ -34,10 +34,10 @@
     </script>
 
     <script type="text/javascript">
-    
+
         var socketId = '';
         var link = '{{env('NODE_LINK')}}';
-        let socket = io('wss://socket.changaapp.com', {
+        let socket = io(link, {
       transports: ['websocket'], // Force WebSocket transport
     });
 
