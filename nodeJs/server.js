@@ -1,140 +1,35 @@
-
-//text/x-generic server.js ( ASCII C++ program text, with CRLF line terminators )
-const express = require("express");
-const app = express();
-//const ws = new WebSocket("wss://socket.changaapp.com/");
+const https = require('https');
 const fs = require('fs');
-   var options = {
-        key: fs.readFileSync('/etc/letsencrypt/live/socket.changaapp.com/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/socket.changaapp.com/fullchain.pem'),
-        //ca: fs.readFileSync('./test_ca.crt'),
+const socketIO = require('socket.io');
 
-        requestCert: false,
-        //rejectUnauthorized: false
-    }
+// Read SSL/TLS certificates
+const privateKey = fs.readFileSync('../privateKey.pem', 'utf8');
+const certificate = fs.readFileSync('../certificate.pem', 'utf8');
+const credentials = { key: privateKey, cert: certificate };
 
+// Create HTTPS server
+const server = https.createServer(credentials);
 
-const server = require("https").createServer(options,app);
-var mysql = require("mysql2");
+// Initialize Socket.IO
+const io = socketIO(server);
 
-const cors = require('cors');
+// Socket.IO event handling
+io.on('connection', (socket) => {
+  console.log('A user connected');
 
-const corsOptions = {
-    origin: 'https://changaapp.com', // or passing the * for allow all
-    credentials: true,
-    optionSuccessStatus: 200
-}
-app.use(cors(corsOptions));
+  // Handle socket events
+  socket.on('message', (data) => {
+    console.log('Received message:', data);
+    // Handle the message
+  });
 
-var con = mysql.createConnection({
-    host: '127.0.0.1',
-    user: 'changa_app',
-    password: 'changaapp@6633',
-    database: 'changa_app',
-    port: 3306,
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+    // Handle disconnection
+  });
 });
 
-con.connect(function (err) {
-    if (err) throw err;
+// Start the server
+server.listen(443, () => {
+  console.log('Server listening on port 443');
 });
-
-app.get('/', function(req, res)
-{
-	res.send('<h1>Socket is working</h1>');
-});
-
-/*const io = require("socket.io")(server, {
-    cors: { origin: "*", reconnect: true, rejectUnauthorized: false },
-});*/
-const { Server } = require("socket.io");
-
-const io = new Server(server, {
-    cors: {
-    origin: 'https://socket.changaapp.com',
-   // methods: ["GET", "POST"],
-   // credentials: true
-    }
-});
-
-io.on("connection", (socket) => {
-    console.log("connection", socket.id);
-
-    socket.on("create-room", (roomId) => {
-
-
-        console.log(roomId + " -- group id");
-        io.emit("room-created", roomId);
-    });
-
-    socket.on("join", (room_id, user_id) => {
-        console.log(room_id + " -- join");
-        socket.join(room_id);
-    });
-
-    socket.on("typing", (data) => {
-        if (data.typing == true) io.emit("display", data);
-        else io.emit("display", data);
-    });
-
-
-    //lisen from client
-    socket.on("sendChatToServer", function (data) {
-           console.log("data "+ data);
-        var today = new Date();
-        var date =
-            today.getFullYear() +
-            "-" +
-            (today.getMonth() + 1) +
-            "-" +
-            today.getDate();
-        var time =
-            today.getHours() +
-            ":" +
-            today.getMinutes() +
-            ":" +
-            today.getSeconds();
-        var dateTime = date + " " + time;
-
-        var insertMessage =
-            "insert into messages (group_id, user_id, message, created_at, updated_at) values (" +
-            data.receiver +
-            "," +
-            data.sender +
-            ",'" +
-            data.message +
-            "','" +
-            dateTime +
-            "','" +
-            dateTime +
-            "')";
-        console.log(insertMessage);
-        con.query(insertMessage, function (err, result) {
-            if (err) throw err;
-            console.log(result.affectedRows + " record(s) insert");
-        });
-
-        io.to(data.receiver).emit("sendChatToClient", data);
-    });
-
-
-
-socket.on('sendChatToClient', function(data) {
-console.log(data);
-            $('.last_message_' + data.sender).html(data.message);
-            var html = '';
-                html +=
-                    '<div class="mt-3 col-lg-12 bg-chat p-3 br-12 text-15">' + data.username + ': ' + data.message +
-                    '</div>';
-                document.getElementById('chat-box').innerHTML += html;
-        });
-
-    socket.on("disconnect", (socket) => {
-        console.log("disconnect");
-    });
-});
-
-// server.listen(3000, () => {
-//     console.log("listening on *:3000");
-// });
-
-server.listen();
