@@ -1,31 +1,29 @@
-
 //text/x-generic server.js ( ASCII C++ program text, with CRLF line terminators )
 const express = require("express");
 const app = express();
-const ws = new WebSocket("wss://socket.changaapp.com/");
+
 
 const server = require("http").createServer(app);
-var mysql = require("mysql2");
+var mysql = require("mysql");
 
 const cors = require('cors');
 
 const corsOptions = {
     origin: '*', // or passing the * for allow all
-    credentials: false,
+    credentials: true,
     optionSuccessStatus: 200
 }
 app.use(cors(corsOptions));
 
 var con = mysql.createConnection({
-    host: '127.0.0.1',
-    user: 'changa_app',
-    password: 'changaapp@6633',
-    database: 'changa_app',
-    port: 3306,
+    host: "127.0.0.1",
+    user: "changa_app",
+    password: "changaapp@6633",
+    database: "changa_app",
 });
 
 con.connect(function (err) {
-    if (err) throw err;
+    if (err) throw err
 });
 
 app.get('/', function(req, res)
