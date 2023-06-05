@@ -34,12 +34,18 @@
     </script>
 
     <script type="text/javascript">
-        let ip_address = 'http://changaapp.com';
-        let socket_port = 3000;
+    
         var socketId = '';
-        // let socket = io(ip_address + ':' + socket_port);
         var link = '{{env('NODE_LINK')}}';
-        let socket = io(link);
+        let socket = io('wss://socket.changaapp.com', {
+      transports: ['websocket'], // Force WebSocket transport
+    });
+
+    // Event handler for connection failure
+    socket.on('connect_error', (error) => {
+      console.error('WebSocket connection failed:', error);
+      // Handle the connection failure appropriately
+    });
         socket.on('connect', () => {
             socketId = socket.id;
             console.log(socketId + 'socketId');
