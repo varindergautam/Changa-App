@@ -29,9 +29,7 @@
     </div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="https://cdn.socket.io/4.1.1/socket.io.min.js"
-        integrity="sha384-cdrFIqe3RasCMNE0jeFG9xJHog/tgOVC1E9Lzve8LQN1g5WUHo0Kvk1mawWjxX7a" crossorigin="anonymous">
-    </script>
+    <script src="https://cdn.socket.io/4.1.1/socket.io.min.js"></script>
 
     <script type="text/javascript">
 
