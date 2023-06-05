@@ -38,7 +38,7 @@
         var socketId = '';
         var link = '{{env('NODE_LINK')}}';
         let socket = io(link, {
-      transports: ['websocket'], // Force WebSocket transport
+    //   transports: ['websocket'], // Force WebSocket transport
     });
 
     // Event handler for connection failure
