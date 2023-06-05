@@ -34,12 +34,12 @@
     </script>
 
     <script type="text/javascript">
-        let ip_address = 'http://localhost';
+        let ip_address = 'http://changaapp.com';
         let socket_port = 3000;
         var socketId = '';
         // let socket = io(ip_address + ':' + socket_port);
         var link = '{{env('NODE_LINK')}}';
-        let socket = io(link,{secure: true});
+        let socket = io(link);
         socket.on('connect', () => {
             socketId = socket.id;
             console.log(socketId + 'socketId');

@@ -1,27 +1,16 @@
-
-//text/x-generic server.js ( ASCII C++ program text, with CRLF line terminators )
+const ws = new WebSocket("wss://" + location.host + "/")//text/x-generic server.js ( ASCII C++ program text, with CRLF line terminators )
 const express = require("express");
 const app = express();
-//const ws = new WebSocket("wss://socket.changaapp.com/");
-const fs = require('fs');
-   var options = {
-        key: fs.readFileSync('/etc/letsencrypt/live/socket.changaapp.com/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/socket.changaapp.com/fullchain.pem'),
-        //ca: fs.readFileSync('./test_ca.crt'),
-
-        requestCert: false,
-        //rejectUnauthorized: false
-    }
 
 
-const server = require("https").createServer(options,app);
+const server = require("http").createServer(app);
 var mysql = require("mysql2");
 
 const cors = require('cors');
 
 const corsOptions = {
-    origin: 'https://changaapp.com', // or passing the * for allow all
-    credentials: true,
+    origin: '*', // or passing the * for allow all
+    credentials: false,
     optionSuccessStatus: 200
 }
 app.use(cors(corsOptions));
@@ -50,9 +39,7 @@ const { Server } = require("socket.io");
 
 const io = new Server(server, {
     cors: {
-    origin: 'https://socket.changaapp.com',
-   // methods: ["GET", "POST"],
-   // credentials: true
+        origin: process.env.NODE_LINK,
     }
 });
 
