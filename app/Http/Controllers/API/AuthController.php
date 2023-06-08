@@ -386,7 +386,7 @@ class AuthController extends BaseController {
                 $login_type = 'username';
             }
             
-            $user = User::withCount('unreadNotification')->where([$login_type => $request->email])->first();
+            $user = User::withCount('unreadNotification')->with('userNotificationSetting')->where([$login_type => $request->email])->first();
             if(empty($user)) {
                 return $this->sendError('User not found');
             }
