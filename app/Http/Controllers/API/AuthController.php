@@ -551,6 +551,9 @@ class AuthController extends BaseController {
             'isGoogle'=>'required',
             'displayName'=>'required',
             'id'=>'required',
+            'end_trip_remainder' => 'required',
+            'new_content' => 'required',
+            'trip_update' => 'required',
         ]);
         if($validator->fails()){
             return $this->sendError($validator->errors()->all());
@@ -564,6 +567,7 @@ class AuthController extends BaseController {
             $username  = 'tw_'.Str::slug($request->displayName);
         }
         $user = User::select('id', 'email', 'username','user_type')
+            ->with('userNotificationSetting')
             ->where('user_type' , $request->user_type)
             ->where('email', $request->email)
             ->Orwhere('username', $username)
@@ -585,6 +589,13 @@ class AuthController extends BaseController {
             ]);
         }
 
+        UserNotificationSetting::updateOrCreate(['user_id' => $user->id],
+        [
+            'user_id' => $user->id,
+            'end_trip_remainder' => $request->end_trip_remainder,
+            'new_content' => $request->new_content,
+            'trip_update' => $request->trip_update,
+        ]);
 
         $token =  $user->createToken( 'token-name', [ 'server:update' ] )->plainTextToken;
         $user->update( [
