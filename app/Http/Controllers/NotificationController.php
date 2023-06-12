@@ -11,7 +11,7 @@ class NotificationController extends Controller
 
     public function sendSmsNotificaition($phone, $otp)
     {
-        $basic  = new Basic('af01900c', '7wky0jWGNtFo3QJf');
+        $basic  = new Basic'4c89a126', '0ondH8X33yXTABRE');
         $client = new Client($basic);
  
         $response = $client->sms()->send(
