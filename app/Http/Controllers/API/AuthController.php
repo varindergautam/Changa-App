@@ -581,6 +581,7 @@ class AuthController extends BaseController {
                 'first_name' => $request->displayName,
                 'customer_id' => 'CHA-'.random_int(10000, 99999),
                 'email' => $request->email,
+                'phone' => $request->phone,
                 'username' => $username,
                 'password' => Hash::make(\Str::random(8)),
                 'user_type' => $request->user_type,
