@@ -85,7 +85,7 @@
         <li>
             <a type="button"
                 class="nav-link dropdown-btn">
-                <i class="zmdi zmdi-account-circle"></i><span>App Home <i class="fa fa-chevron-down fa-color icon-rotates" aria-hidden="true"></i></span>
+                <i class="zmdi zmdi-apps"></i><span>App Home <i class="fa fa-chevron-down fa-color icon-rotates" aria-hidden="true"></i></span>
             </a>
             <ul class="nav-link dropdown-container"
                 style="padding:0; {{ Request::segment(1) == 'mediate_tags' || Request::segment(1) == 'mediates' || Request::segment(1) == 'learn_tags' || Request::segment(1) == 'learns' || Request::segment(1) == 'listen_tags' || Request::segment(1) == 'listens' || Request::segment(1) == 'therapy_tags' || Request::segment(1) == 'therapy' || Request::segment(1) == 'guide_category' || Request::segment(1) == 'guide' ? 'display : block' : '' }}">
@@ -319,7 +319,7 @@
 
         <li>
             <a href="{{ route('group') }}" class=" nav-link {{ Request::segment(1) == 'group' ? 'active' : '' }}">
-                <i class="zmdi zmdi-account-circle"></i><span>Chat Groups</span>
+                <i class="zmdi zmdi-group"></i><span>Chat Groups</span>
             </a>
         </li>
 

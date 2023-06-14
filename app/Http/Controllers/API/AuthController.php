@@ -549,6 +549,7 @@ class AuthController extends BaseController {
             'email' => 'required|email',
             'user_type'=>'required',
             'isGoogle'=>'required',
+            'phone' => 'required|unique:users|max:191',
             'displayName'=>'required',
             'id'=>'required',
             'end_trip_remainder' => 'required',

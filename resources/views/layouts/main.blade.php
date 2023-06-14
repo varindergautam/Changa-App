@@ -30,7 +30,7 @@
     <link href="{{ asset('css/sidebar-menu.css') }}" rel="stylesheet" />
     <!-- Custom Style-->
     <link href="{{ asset('css/app-style.css') }}" rel="stylesheet" />
-
+    <script src="https://kit.fontawesome.com/35963515c4.js" crossorigin="anonymous"></script>
   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.2/css/bootstrap-multiselect.css" />
     {{-- @extends('panels/styles') --}}
