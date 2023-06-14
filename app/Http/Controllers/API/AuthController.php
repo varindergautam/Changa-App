@@ -546,7 +546,7 @@ class AuthController extends BaseController {
     public function socialLogin(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users|max:191',
             'user_type'=>'required',
             'isGoogle'=>'required',
             'phone' => 'required|unique:users|max:191',
