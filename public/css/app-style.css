@@ -2636,7 +2636,7 @@ table.grid td {
     font-weight: 600;
     text-transform: uppercase;
 	margin: 3px;
-    padding: 12px 20px;
+    padding: 12px 12px;
 	-webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;
     -o-transition: all 0.3s ease;

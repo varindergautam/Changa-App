@@ -72,7 +72,7 @@ class AuthController extends BaseController {
 
         $user = User::where( 'email', $request->email )->first();
 
-        if ( $user->id != null ) {
+        if ( !empty($user)) {
             $verification_code = $this->generateOtp( $user->phone );
             try{
                 $otp =  $this->sendSmsNotificaition( $user->phone, $verification_code->otp );

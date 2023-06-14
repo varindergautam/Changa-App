@@ -1,6 +1,6 @@
 <style>
     .simplebar-content .dropdown-btn {
-        padding: 12px 26px;
+        padding: 12px 19px;
         text-decoration: none;
         margin: -1px;
         color: #fff;
@@ -11,21 +11,18 @@
         cursor: pointer;
         outline: none;
     }
-
     .dropdown-container {
         display: none;
         padding: 0;
         color: #fff;
 
     }
-
     .dropdown-container li a {
         display: block;
         padding: 12px 30px;
         width: inherit;
         margin: 2px 0px;
     }
-
     ul.nav-link.dropdown-container li {
         padding-left: 15px;
     }
@@ -50,6 +47,161 @@
         </li>
 
         <li>
+            <a type="button"
+                class="nav-link dropdown-btn">
+                <i class="zmdi zmdi-account-circle"></i><span>Users <i class="fa fa-chevron-down fa-color icon-rotates" aria-hidden="true"></i></span>
+            </a>
+            <ul class="nav-link dropdown-container"
+                style="padding:0; {{ Request::segment(1) == 'mediators' || Request::segment(1) == 'mediator_category' || Request::segment(1) == 'users' ? 'display : block' : '' }}">
+                <li>
+                    <a href="{{ route('users') }}" class=" nav-link {{ Request::segment(1) == 'users' ? 'active' : '' }}">
+                        <i class="zmdi zmdi-account-circle"></i> <span>Customers</span>
+                    </a>
+                </li>
+                <li>
+                    <a type="button"
+                        class="nav-link dropdown-btn">
+                        <i class="zmdi zmdi-account-circle"></i><span>Mediator <i
+                                class="fa fa-chevron-down fa-color icon-rotates" aria-hidden="true"></i></span></a>
+                    <ul class="nav-link dropdown-container"
+                        style="padding:0; {{ Request::segment(1) == 'mediator_category' || Request::segment(1) == 'mediators' ? 'display : block' : '' }}">
+                        <li>
+                            <a href="{{ route('mediator_category') }}"
+                                class="nav-link {{ Request::segment(1) == 'mediator_category' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Mediator Category</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('mediators') }}"
+                                class=" nav-link {{ Request::segment(1) == 'mediators' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Mediators</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+
+        <li>
+            <a type="button"
+                class="nav-link dropdown-btn">
+                <i class="zmdi zmdi-account-circle"></i><span>App Home <i class="fa fa-chevron-down fa-color icon-rotates" aria-hidden="true"></i></span>
+            </a>
+            <ul class="nav-link dropdown-container"
+                style="padding:0; {{ Request::segment(1) == 'mediate_tags' || Request::segment(1) == 'mediates' || Request::segment(1) == 'learn_tags' || Request::segment(1) == 'learns' || Request::segment(1) == 'listen_tags' || Request::segment(1) == 'listens' || Request::segment(1) == 'therapy_tags' || Request::segment(1) == 'therapy' || Request::segment(1) == 'guide_category' || Request::segment(1) == 'guide' ? 'display : block' : '' }}">
+                <li>
+                    <a type="button"
+                        class="nav-link dropdown-btn {{ Request::segment(1) == 'mediate_tags' || Request::segment(1) == 'mediates' ? 'active1' : '' }}">
+                        <i class="zmdi zmdi-account-circle"></i><span>Mediates <i
+                                class="fa fa-chevron-down fa-color icon-rotates" aria-hidden="true"></i></span></a>
+                    <ul class="nav-link dropdown-container"
+                        style="padding:0; {{ Request::segment(1) == 'mediate_tags' || Request::segment(1) == 'mediates' ? 'display : block' : '' }}">
+                        <li>
+                            <a href="{{ route('mediate_tags') }}"
+                                class="nav-link {{ Request::segment(1) == 'mediate_tags' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Tags</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('mediates') }}"
+                                class=" nav-link {{ Request::segment(1) == 'mediates' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Posts</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a type="button"
+                        class="nav-link dropdown-btn {{ Request::segment(1) == 'mediate_tags' || Request::segment(1) == 'learns' ? 'active1' : '' }}">
+                        <i class="zmdi zmdi-account-circle"></i><span>Learn <i class="fa fa-chevron-down fa-color icon-rotates"
+                                aria-hidden="true"></i></span></a>
+                    <ul class="nav-link dropdown-container"
+                        style="padding:0; {{ Request::segment(1) == 'learn_tags' || Request::segment(1) == 'learns' ? 'display : block' : '' }}">
+                        <li>
+                            <a href="{{ route('learn_tags') }}"
+                                class="nav-link {{ Request::segment(1) == 'learn_tags' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Tags</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('learns') }}"
+                                class=" nav-link {{ Request::segment(1) == 'learns' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Posts</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+        
+                <li>
+                    <a type="button"
+                        class="nav-link dropdown-btn {{ Request::segment(1) == 'listen_tags' || Request::segment(1) == 'listens' ? 'active1' : '' }}">
+                        <i class="zmdi zmdi-account-circle"></i><span>Listen <i class="fa fa-chevron-down fa-color icon-rotates"
+                                aria-hidden="true"></i></span></a>
+                    <ul class="nav-link dropdown-container"
+                        style="padding:0; {{ Request::segment(1) == 'listen_tags' || Request::segment(1) == 'listens' ? 'display : block' : '' }}">
+                        <li>
+                            <a href="{{ route('listen_tags') }}"
+                                class="nav-link {{ Request::segment(1) == 'listen_tags' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Tags</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('listens') }}"
+                                class=" nav-link {{ Request::segment(1) == 'listens' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Posts</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+        
+                <li>
+                    <a type="button"
+                        class="nav-link dropdown-btn {{ Request::segment(1) == 'therapy_tags' || Request::segment(1) == 'therapy' ? 'active1' : '' }}">
+                        <i class="zmdi zmdi-account-circle"></i><span>Therapy <i
+                                class="fa fa-chevron-down fa-color icon-rotates" aria-hidden="true"></i></span></a>
+                    <ul class="nav-link dropdown-container"
+                        style="padding:0; {{ Request::segment(1) == 'therapy_tags' || Request::segment(1) == 'therapy' ? 'display : block' : '' }}">
+                        <li>
+                            <a href="{{ route('therapy_tags') }}"
+                                class="nav-link {{ Request::segment(1) == 'therapy_tags' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Tags</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('therapy') }}"
+                                class=" nav-link {{ Request::segment(1) == 'therapy' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Posts</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a type="button"
+                        class="nav-link dropdown-btn {{ Request::segment(1) == 'guide_category' || Request::segment(1) == 'guide' ? 'active1' : '' }}">
+                        <i class="zmdi zmdi-account-circle"></i><span>Guide <i class="fa fa-chevron-down fa-color icon-rotates"
+                                aria-hidden="true"></i></span></a>
+                    <ul class="nav-link dropdown-container"
+                        style="padding:0; {{ Request::segment(1) == 'guide_category' || Request::segment(1) == 'guide' ? 'display : block' : '' }}">
+                        <li>
+                            <a href="{{ route('guide_category') }}"
+                                class="nav-link {{ Request::segment(1) == 'guide_category' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Guide Category</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('guide') }}"
+                                class=" nav-link {{ Request::segment(1) == 'guide' ? 'active' : '' }}">
+                                <i class="zmdi zmdi-account-circle"></i><span>Guide</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+
+        {{-- <li>
             <a href="{{ route('users') }}" class=" nav-link {{ Request::segment(1) == 'users' ? 'active' : '' }}">
                 <i class="zmdi zmdi-account-circle"></i> <span>Customers</span>
             </a>
@@ -75,11 +227,9 @@
                     </a>
                 </li>
             </ul>
-        </li>
+        </li> --}}
 
-
-
-        <li>
+        {{-- <li>
             <a type="button"
                 class="nav-link dropdown-btn {{ Request::segment(1) == 'mediate_tags' || Request::segment(1) == 'mediates' ? 'active1' : '' }}">
                 <i class="zmdi zmdi-account-circle"></i><span>Mediates <i
@@ -99,9 +249,9 @@
                     </a>
                 </li>
             </ul>
-        </li>
+        </li> --}}
 
-        <li>
+        {{-- <li>
             <a type="button"
                 class="nav-link dropdown-btn {{ Request::segment(1) == 'mediate_tags' || Request::segment(1) == 'learns' ? 'active1' : '' }}">
                 <i class="zmdi zmdi-account-circle"></i><span>Learn <i class="fa fa-chevron-down fa-color icon-rotates"
@@ -165,18 +315,15 @@
                     </a>
                 </li>
             </ul>
-        </li>
+        </li> --}}
 
         <li>
-            <a href="{{ route('group') }}"
-                class=" nav-link {{ Request::segment(1) == 'group' ? 'active' : '' }}">
-                <i class="zmdi zmdi-account-circle"></i><span>Group</span>
+            <a href="{{ route('group') }}" class=" nav-link {{ Request::segment(1) == 'group' ? 'active' : '' }}">
+                <i class="zmdi zmdi-account-circle"></i><span>Chat Groups</span>
             </a>
         </li>
 
-        
-
-        <li>
+        {{-- <li>
             <a type="button"
                 class="nav-link dropdown-btn {{ Request::segment(1) == 'guide_category' || Request::segment(1) == 'guide' ? 'active1' : '' }}">
                 <i class="zmdi zmdi-account-circle"></i><span>Guide <i class="fa fa-chevron-down fa-color icon-rotates"
@@ -196,15 +343,15 @@
                     </a>
                 </li>
             </ul>
-        </li>
+        </li> --}}
 
         <li>
             <a type="button"
                 class="nav-link dropdown-btn {{ Request::segment(1) == 'fellings' || Request::segment(1) == 'intentions' ? 'active1' : '' }}">
-                <i class="zmdi zmdi-account-circle"></i><span>Begin Trip <i
+                <i class="zmdi zmdi-account-circle"></i><span>Trip System <i
                         class="fa fa-chevron-down fa-color icon-rotates" aria-hidden="true"></i></span></a>
             <ul class="nav-link dropdown-container"
-                style="padding:0; {{Request::segment(1) == 'audio' || Request::segment(1) == 'audio_tags' || Request::segment(1) == 'visual' || Request::segment(1) == 'fellings' || Request::segment(1) == 'trip_journal' || Request::segment(1) == 'intentions' ? 'display : block' : '' }}">
+                style="padding:0; {{ Request::segment(1) == 'audio' || Request::segment(1) == 'audio_tags' || Request::segment(1) == 'visual' || Request::segment(1) == 'fellings' || Request::segment(1) == 'trip_journal' || Request::segment(1) == 'intentions' ? 'display : block' : '' }}">
                 <li>
                     <a href="{{ route('fellings') }}"
                         class="nav-link {{ Request::segment(1) == 'fellings' ? 'active' : '' }}">
@@ -254,9 +401,8 @@
         </li>
 
         <li>
-            <a href="{{ route('page') }}"
-                class=" nav-link {{ Request::segment(1) == 'page' ? 'active' : '' }}">
-                <i class="zmdi zmdi-account-circle"></i><span>Term & Policy</span>
+            <a href="{{ route('page') }}" class=" nav-link {{ Request::segment(1) == 'page' ? 'active' : '' }}">
+                <i class="fa-solid fa-file-contract"></i><span>Term & Policy</span>
             </a>
         </li>
     </ul>
