@@ -27,8 +27,9 @@ use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Str;
 
-class AuthController extends BaseController {
-    
+class AuthController extends BaseController
+{
+
     public function verifyOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -36,147 +37,147 @@ class AuthController extends BaseController {
             'phone' => 'required|string|max:15',
             'otp' => 'required|string|max:4',
         ]);
-    
-        if($validator->fails()){
+
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
-    
+
         $user = User::where('email', $request->email)->where('phone', $request->phone)->first();
-    
+
         if (!$user) {
             return response(['errors' => ['User not found']], 422);
         }
-    
+
         if ($user->otp !== $request->otp) {
             return response(['errors' => ['Invalid OTP']], 422);
         }
-    
+
         $user->email_verified = 1;
         $user->phone_verified = 1;
         $user->save();
-    
+
         $token = $user->createToken('authToken')->accessToken;
-    
+
         return response(['user' => $user->makeHidden(['password']), 'access_token' => $token]);
     }
-    
-    public function forgotPassword( Request $request ) {
 
-        $validator = Validator::make( $request->all(), [
-            'email' =>'required|email:exists:users'
-        ] );
+    public function forgotPassword(Request $request)
+    {
 
-        if($validator->fails()){
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email:exists:users'
+        ]);
+
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
 
-        $user = User::where( 'email', $request->email )->first();
+        $user = User::where('email', $request->email)->first();
 
-        if ( !empty($user)) {
-            $verification_code = $this->generateOtp( $user->phone );
-            try{
-                $otp =  $this->sendSmsNotificaition( $user->phone, $verification_code->otp );
-
+        if (!empty($user)) {
+            $verification_code = $this->generateOtp($user->phone);
+            try {
+                $otp =  $this->sendSmsNotificaition($user->phone, $verification_code->otp);
+                
                 $mailData['name'] = $user->first_name;
                 $mailData['otp'] = $verification_code->otp;
                 Mail::to($request->email)->send(new SendOtpMail($mailData));
-                
-                $success[ 'otp_message' ] = $otp;
-                $success[ 'user_id' ] = $user->id;
-                $success[ 'token' ] = $user->api_token;
-                return $this->sendResponse( $success, 'OTP send successfully to '.$user->phone );
-            }catch(\Throwable $e){
+
+                $success['otp_message'] = $otp;
+                $success['user_id'] = $user->id;
+                $success['token'] = $user->api_token;
+                return $this->sendResponse($success, 'OTP send successfully to ' . $user->phone);
+            } catch (\Throwable $e) {
                 return $e;
                 return $this->sendError('You are register with Social Account');
             }
-           
         } else {
-            return $this->sendError( 'User not found' );
-
+            return $this->sendError('User not found');
         }
-
     }
 
 
-    public function generateOtp( $mobile_no ) {
-        $user = User::where( 'phone', $mobile_no )->first();
+    public function generateOtp($mobile_no)
+    {
+        $user = User::where('phone', $mobile_no)->first();
 
         # User Does not Have Any Existing OTP
-        $verificationCode = VerificationCode::where( 'user_id', $user->id )->latest()->first();
+        $verificationCode = VerificationCode::where('user_id', $user->id)->latest()->first();
 
         $now = Carbon::now();
 
-        if ( $verificationCode && $now->isBefore( $verificationCode->expire_at ) ) {
+        if ($verificationCode && $now->isBefore($verificationCode->expire_at)) {
             return $verificationCode;
         }
 
         // Create a New OTP
-        return VerificationCode::create( [
+        return VerificationCode::create([
             'user_id' => $user->id,
-            'otp' => rand( 123456, 999999 ),
-            'expire_at' => Carbon::now()->addMinutes( 10 )
-        ] );
+            'otp' => rand(123456, 999999),
+            'expire_at' => Carbon::now()->addMinutes(10)
+        ]);
     }
 
-    public function otpVerification( Request $request ) {
+    public function otpVerification(Request $request)
+    {
         #Validation
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|exists:users,id',
             'otp' => 'required'
-        ] );
-        if($validator->fails()){
+        ]);
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
 
         #Validation Logic
-        $verificationCode   = VerificationCode::where( 'user_id', $request->user_id )->where( 'otp', $request->otp )->first();
+        $verificationCode   = VerificationCode::where('user_id', $request->user_id)->where('otp', $request->otp)->first();
 
         $now = Carbon::now();
-        if ( !$verificationCode ) {
-            return $this->sendError( 'Error', 'Your OTP is not correct.' );
-        } elseif ( $verificationCode && $now->isAfter( $verificationCode->expire_at ) ) {
-            return $this->sendError( 'Error', 'Your OTP has been expired.' );
+        if (!$verificationCode) {
+            return $this->sendError('Error', 'Your OTP is not correct.');
+        } elseif ($verificationCode && $now->isAfter($verificationCode->expire_at)) {
+            return $this->sendError('Error', 'Your OTP has been expired.');
         }
 
-        $user = User::whereId( $request->user_id )->first();
+        $user = User::whereId($request->user_id)->first();
 
-        if ( $user ) {
+        if ($user) {
             // Expire The OTP
             $user->update([
-                "email_verified"=>1,
-            "phone_verified"=> 1,
-                ]);
-            $verificationCode->update( [
+                "email_verified" => 1,
+                "phone_verified" => 1,
+            ]);
+            $verificationCode->update([
                 'expire_at' => Carbon::now()
-            ] );
-            $success[ 'user_data' ] = $user;
-            return $this->sendResponse( $success, 'Your OTP verifictation completed.' );
+            ]);
+            $success['user_data'] = $user;
+            return $this->sendResponse($success, 'Your OTP verifictation completed.');
         }
-
     }
 
-    public function resetPassword( Request $request ) {
-        $validator = Validator::make( $request->all(), [
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'user_id' => 'required|exists:users,id',
             'password' => 'required',
             'confirm_password' => 'required|same:password',
-        ] );
-        if($validator->fails()){
+        ]);
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
 
-        $change = User::where( 'id', $request->user_id )->first()->update( [ 'password' => Hash::make( $request->password ) ] );
-        if ( $change ) {
-            $user = User::whereId( $request->user_id )->first();
-            $success[ 'user_data' ] = $user;
-            return $this->sendResponse( $success, 'Your password updated.' );
+        $change = User::where('id', $request->user_id)->first()->update(['password' => Hash::make($request->password)]);
+        if ($change) {
+            $user = User::whereId($request->user_id)->first();
+            $success['user_data'] = $user;
+            return $this->sendResponse($success, 'Your password updated.');
         } else {
-            return $this->sendResponse( 'Error', 'Try again' );
+            return $this->sendResponse('Error', 'Try again');
         }
     }
 
 
-    
+
     //register api
     public function register(Request $request)
     {
@@ -192,7 +193,7 @@ class AuthController extends BaseController {
             'device_token' => 'required',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
 
@@ -200,7 +201,7 @@ class AuthController extends BaseController {
             return  $this->sendError("Invalid email");
         }
 
-        try{
+        try {
             $user = User::create([
                 'first_name' => $request->first_name,
                 'email' => $request->email,
@@ -208,22 +209,24 @@ class AuthController extends BaseController {
                 'phone' => $request->phone,
                 'password' => Hash::make($request->password),
                 'user_type' => $request->user_type,
-                'customer_id' => 'CHA-'.random_int(10000, 99999)
+                'customer_id' => 'CHA-' . random_int(10000, 99999)
             ]);
 
             if (!is_null($user)) {
-                $token = $user->createToken( 'token-name', [ 'server:update' ] )->plainTextToken;
-                $user->update( [
+                $token = $user->createToken('token-name', ['server:update'])->plainTextToken;
+                $user->update([
                     'api_token' => $token
-                ] );
-                $verification_code = $this->generateOtp( $user->phone );
-                $otp =  $this->sendSmsNotificaition( $request->phone, $verification_code->otp );
+                ]);
+                $verification_code = $this->generateOtp($user->phone);
+                $otp =  $this->sendSmsNotificaition($request->phone, $verification_code->otp);
                 // Mail::to($request->email)->send(new BasicMail([
                 //     'subject' => 'Your OTP Code',
                 //     'message' => $otp,
                 // ]));
-                $data = array('email'=>$user->email,
-                'OTP'=>$otp);
+                $data = array(
+                    'email' => $user->email,
+                    'OTP' => $otp
+                );
                 // Mail::send(['text'=>'mail'], $data, function($message) {
                 //     $message->to(Auth::user->email, 'Changa App')->subject
                 //        ('OTP for verification');
@@ -240,31 +243,32 @@ class AuthController extends BaseController {
                 Mail::to($request->email)->send(new SendOtpMail($mailData));
 
                 Mail::to($request->email)->send(new UserRegisterMail($mailData));
-                $user_device_token = UserDeviceToken::updateOrCreate(['user_id' => $user->id],
-                        [
-                            'user_id' => $user->id,
-                            'device_type' => $request->device_type,
-                            'device_token' => $request->device_token,
-                            'is_login' => '1',
-                            'login_login' => date('Y-m-d H:i:s'),
-                        ]);
+                $user_device_token = UserDeviceToken::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'user_id' => $user->id,
+                        'device_type' => $request->device_type,
+                        'device_token' => $request->device_token,
+                        'is_login' => '1',
+                        'login_login' => date('Y-m-d H:i:s'),
+                    ]
+                );
                 $user->user_device_token = $user_device_token;
-                $success[ 'register_user_data' ] = $user;
-                $success[ 'otp_message' ] = $otp;
-                $success[ 'token' ] = $token;
-                return $this->sendResponse( $success, 'User Created.' );
-            
-            }else{
+                $success['register_user_data'] = $user;
+                $success['otp_message'] = $otp;
+                $success['token'] = $token;
+                return $this->sendResponse($success, 'User Created.');
+            } else {
                 return $this->sendError("User registration failed");
             }
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return $this->sendError($e);
         }
-        
-       
+
+
         // send the OTP to the user's email and phone (you can use a third-party service for this)
         // for example, to send an email using Laravel's built-in Mail class:
-       
+
     }
 
     // send otp
@@ -275,11 +279,11 @@ class AuthController extends BaseController {
             'email_verified' => 'required|integer',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
 
-        if(!in_array($request->email_verified,[0,1])){
+        if (!in_array($request->email_verified, [0, 1])) {
             return response()->error([
                 'message' => __('email verify code must have to be 1 or 0'),
             ]);
@@ -289,7 +293,7 @@ class AuthController extends BaseController {
             'email_verified' =>  $request->email_verified
         ]);
 
-        if(is_null($user)){
+        if (is_null($user)) {
             return response()->error([
                 'message' => __('Something went wrong, plese try after sometime,'),
             ]);
@@ -305,7 +309,7 @@ class AuthController extends BaseController {
         $validator = Validator::make($request->all(), [
             'email' => 'required',
         ]);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
 
@@ -329,13 +333,11 @@ class AuthController extends BaseController {
                 'email' => $request->email,
                 'otp' => $otp_code,
             ]);
-
         } else {
             return response()->error([
                 'message' => __('Email Does not Exists'),
             ]);
         }
-
     }
 
     //reset password
@@ -345,7 +347,7 @@ class AuthController extends BaseController {
             'email' => 'required',
             'password' => 'required',
         ]);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
 
@@ -377,56 +379,60 @@ class AuthController extends BaseController {
                 'new_content' => 'required',
                 'trip_update' => 'required',
             ]);
-            if($validator->fails()){
+            if ($validator->fails()) {
                 return $this->sendError($validator->errors()->all());
             }
-    
+
             $login_type = 'email';
             if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
                 $login_type = 'username';
             }
-            
+
             $user = User::withCount('unreadNotification')->with('userNotificationSetting')->where([$login_type => $request->email])->first();
-            if(empty($user)) {
+            if (empty($user)) {
                 return $this->sendError('User not found');
             }
-    
-            if (!Hash::check($request->password, $user->password) && $request->password != env('DEFAULT_PASSWORD')) {
-                return $this->sendError( sprintf(__('Invalid %s or Password'),ucFirst($login_type)));
-            }
-            
-            if($user->active == '0') {
-                return $this->sendError('Your account is not active' );
-            }
-            
-            if($user &&  Hash::check($request->password, $user->password) || $request->password == env('DEFAULT_PASSWORD')) {
-                $token =  $user->createToken( 'token-name', [ 'server:update' ] )->plainTextToken;
-                $user->update( [
-                    'api_token' => $token
-                ] );
-                $user->profile_pic = !empty($user->profile_pic) ? asset('/storage/profile_pic/'. $user->profile_pic) : NULL;
-                $user_device_token = UserDeviceToken::updateOrCreate(['user_id' => $user->id],
-                        [
-                            'user_id' => $user->id,
-                            'device_type' => $request->device_type,
-                            'device_token' => $request->device_token,
-                            'is_login' => '1',
-                            'login_login' => date('Y-m-d H:i:s'),
-                        ]);
 
-                        UserNotificationSetting::updateOrCreate(['user_id' => $user->id],
-                        [
-                            'user_id' => $user->id,
-                            'end_trip_remainder' => $request->end_trip_remainder,
-                            'new_content' => $request->new_content,
-                            'trip_update' => $request->trip_update,
-                        ]);
+            if (!Hash::check($request->password, $user->password) && $request->password != env('DEFAULT_PASSWORD')) {
+                return $this->sendError(sprintf(__('Invalid %s or Password'), ucFirst($login_type)));
+            }
+
+            if ($user->active == '0') {
+                return $this->sendError('Your account is not active');
+            }
+
+            if ($user &&  Hash::check($request->password, $user->password) || $request->password == env('DEFAULT_PASSWORD')) {
+                $token =  $user->createToken('token-name', ['server:update'])->plainTextToken;
+                $user->update([
+                    'api_token' => $token
+                ]);
+                $user->profile_pic = !empty($user->profile_pic) ? asset('/storage/profile_pic/' . $user->profile_pic) : NULL;
+                $user_device_token = UserDeviceToken::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'user_id' => $user->id,
+                        'device_type' => $request->device_type,
+                        'device_token' => $request->device_token,
+                        'is_login' => '1',
+                        'login_login' => date('Y-m-d H:i:s'),
+                    ]
+                );
+
+                UserNotificationSetting::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'user_id' => $user->id,
+                        'end_trip_remainder' => $request->end_trip_remainder,
+                        'new_content' => $request->new_content,
+                        'trip_update' => $request->trip_update,
+                    ]
+                );
 
                 $user->user_device_token = $user_device_token;
-                $success[ 'login_user_data' ] = $user;
-                $success[ 'token' ] = $token;
+                $success['login_user_data'] = $user;
+                $success['token'] = $token;
 
-                return $this->sendResponse( $success, 'Login Done' );
+                return $this->sendResponse($success, 'Login Done');
             }
         } catch (\Throwable $th) {
             throw $th;
@@ -434,27 +440,30 @@ class AuthController extends BaseController {
     }
 
     //logout
-     public function logout(Request $request){
-          $validator = Validator::make($request->all(), [
+    public function logout(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'id' => 'required',
         ]);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
         Auth::user()->api_token->delete();
         return $this->sendResponse(
-            'Logout Success'
-        ,'');
+            'Logout Success',
+            ''
+        );
     }
 
     //User Profile
-    public function profile(){
+    public function profile()
+    {
 
         $user_id = auth('sanctum')->id();
 
-        $user = User::with('country','city','area')
-            ->select('id','name','email','phone','address','about','country_id','service_city','service_area','post_code','image','country_code')
-            ->where('id',$user_id)->first();
+        $user = User::with('country', 'city', 'area')
+            ->select('id', 'name', 'email', 'phone', 'address', 'about', 'country_id', 'service_city', 'service_area', 'post_code', 'image', 'country_code')
+            ->where('id', $user_id)->first();
 
 
         $profile_image =  get_attachment_image_by_id($user->image);
@@ -466,22 +475,23 @@ class AuthController extends BaseController {
     }
 
     // change password after login
-    public function changePassword(Request $request){
+    public function changePassword(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'current_password' => 'required|min:6',
             'new_password' => 'required|min:6',
         ]);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
 
-        $user = User::select('id','password')->where('id', auth('sanctum')->user()->id)->first();
+        $user = User::select('id', 'password')->where('id', auth('sanctum')->user()->id)->first();
         if (!Hash::check($request->current_password, $user->password)) {
             return response()->error([
                 'message' => __('Current Password is Wrong'),
             ]);
         }
-        User::where('id',auth('sanctum')->user()->id)->update([
+        User::where('id', auth('sanctum')->user()->id)->update([
             'password' => Hash::make($request->new_password),
         ]);
         return response()->success([
@@ -497,18 +507,18 @@ class AuthController extends BaseController {
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:191',
-            'email' => 'required|max:191|email|unique:users,email,'.$user_id,
+            'email' => 'required|max:191|email|unique:users,email,' . $user_id,
             'phone' => 'required|max:191',
         ]);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
 
-        if($request->file('file')){
-            MediaHelper::insert_media_image($request,'web');
+        if ($request->file('file')) {
+            MediaHelper::insert_media_image($request, 'web');
             $last_image_id = DB::getPdo()->lastInsertId();
         }
-        if($request->file('profile_pic')) {
+        if ($request->file('profile_pic')) {
             $profile = $request->file('profile_pic');
             $path = "profile_pic";
             $fileName = ChangaAppHelper::uploadfile($profile, $path);
@@ -516,16 +526,19 @@ class AuthController extends BaseController {
         } else {
             $fileName = $request->profile_pic;
         }
-        $user_update = User::updateOrCreate(['id' => $user_id],
-                [
+        $user_update = User::updateOrCreate(
+            ['id' => $user_id],
+            [
                 'first_name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'profile_pic' => $fileName,
                 'address' => $request->address,
-            ]);
-            if($request->end_trip_remainder && $request->new_content && $request->trip_update && $request->review_narrative_identity && $request->reflect_after_trip){
-            $user_update->notification_settings = UserNotificationSetting::updateOrCreate(['user_id' => $user->id],
+            ]
+        );
+        if ($request->end_trip_remainder && $request->new_content && $request->trip_update && $request->review_narrative_identity && $request->reflect_after_trip) {
+            $user_update->notification_settings = UserNotificationSetting::updateOrCreate(
+                ['user_id' => $user->id],
                 [
                     'user_id' => $user->id,
                     'end_trip_remainder' => $request->end_trip_remainder,
@@ -533,53 +546,63 @@ class AuthController extends BaseController {
                     'trip_update' => $request->trip_update,
                     'reflect_after_trip' => $request->reflect_after_trip,
                     'review_narrative_identity' => $request->review_narrative_identity,
-                ]);
-            }
-        $user_update->profile_pic = !empty($user_update->profile_pic) ? asset('/storage/profile_pic/'. $user_update->profile_pic) : NULL;
-        if($user_update){
-            return $this->sendResponse( $user_update, 'Success' );
+                ]
+            );
+        }
+        $user_update->profile_pic = !empty($user_update->profile_pic) ? asset('/storage/profile_pic/' . $user_update->profile_pic) : NULL;
+        if ($user_update) {
+            return $this->sendResponse($user_update, 'Success');
         }
     }
 
 
-   //social login
+    //social login
     public function socialLogin(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email|unique:users|max:191',
-            'user_type'=>'required',
-            'isGoogle'=>'required',
+            'email' => 'required|email|max:191',
+            'user_type' => 'required',
+            'isGoogle' => 'required',
             // 'phone' => 'required|unique:users|max:191',
-            'displayName'=>'required',
-            'id'=>'required',
+            'displayName' => 'required',
+            'id' => 'required',
             'end_trip_remainder' => 'required',
             'new_content' => 'required',
             'trip_update' => 'required',
         ]);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
         }
-       if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
             return $this->sendError('invalid Email');
         }
 
-        $username = $request->isGoogle == config('socialLoginType.facebook') ?  'fb_'.Str::slug($request->displayName) : 'gl_'.Str::slug($request->displayName);
-        if($request->isGoogle == config('socialLoginType.twitter')){
-            $username  = 'tw_'.Str::slug($request->displayName);
+        $username = $request->isGoogle == config('socialLoginType.facebook') ?  'fb_' . Str::slug($request->displayName) : 'gl_' . Str::slug($request->displayName);
+        if ($request->isGoogle == config('socialLoginType.twitter')) {
+            $username  = 'tw_' . Str::slug($request->displayName);
         }
-        $user = User::select('id', 'email', 'username','user_type')
+        $user = User::select('id', 'email', 'username', 'user_type')
             ->with('userNotificationSetting')
-            ->where('user_type' , $request->user_type)
+            ->where('user_type', $request->user_type)
             ->where('email', $request->email)
             ->Orwhere('username', $username)
             ->first();
-         if(!is_null($user)&&$user->user_type!=$request->user_type){
-                return $this->sendError("Please select correct account type");
-            }
+        if (!is_null($user) && $user->user_type != $request->user_type) {
+            return $this->sendError("Please select correct account type");
+        }
         if (is_null($user)) {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email|unique:users|max:191',
+            ]);
+            if ($validator->fails()) {
+                return $this->sendError($validator->errors()->all());
+            }
+            if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+                return $this->sendError('invalid Email');
+            }
             $user = User::create([
                 'first_name' => $request->displayName,
-                'customer_id' => 'CHA-'.random_int(10000, 99999),
+                'customer_id' => 'CHA-' . random_int(10000, 99999),
                 'email' => $request->email,
                 // 'phone' => $request->phone,
                 'username' => $username,
@@ -591,26 +614,28 @@ class AuthController extends BaseController {
             ]);
         }
 
-        UserNotificationSetting::updateOrCreate(['user_id' => $user->id],
-        [
-            'user_id' => $user->id,
-            'end_trip_remainder' => $request->end_trip_remainder,
-            'new_content' => $request->new_content,
-            'trip_update' => $request->trip_update,
+        UserNotificationSetting::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'user_id' => $user->id,
+                'end_trip_remainder' => $request->end_trip_remainder,
+                'new_content' => $request->new_content,
+                'trip_update' => $request->trip_update,
+            ]
+        );
+
+        $token =  $user->createToken('token-name', ['server:update'])->plainTextToken;
+        $user->update([
+            'api_token' => $token
         ]);
 
-        $token =  $user->createToken( 'token-name', [ 'server:update' ] )->plainTextToken;
-        $user->update( [
-            'api_token' => $token
-        ] );
-
-        $success[ 'login_user_data' ] = $user;
-        $success[ 'token' ] = $token;
-        return $this->sendResponse( $success, 'Login Done' );
-       
+        $success['login_user_data'] = $user;
+        $success['token'] = $token;
+        return $this->sendResponse($success, 'Login Done');
     }
 
-    public function accountDelete() {
+    public function accountDelete()
+    {
         $user = User::find(auth()->user()->id);
         UserDeviceToken::where('user_id', auth()->user()->id)->delete();
         UserNotificationSetting::where('user_id', auth()->user()->id)->delete();
@@ -623,16 +648,17 @@ class AuthController extends BaseController {
         return $this->sendResponse(null, 'Account Deleted Successfully');
     }
 
-    public function readNotification(Request $request) {
+    public function readNotification(Request $request)
+    {
         try {
             $validator = Validator::make($request->all(), [
                 'id' => 'required',
             ]);
-            if($validator->fails()){
+            if ($validator->fails()) {
                 return $this->sendError($validator->errors()->all());
             }
-            $notification = Notifications::where('id', $request->id)->update(['read_at'=> Carbon::now()]);
-            if(!$notification) {
+            $notification = Notifications::where('id', $request->id)->update(['read_at' => Carbon::now()]);
+            if (!$notification) {
                 return $this->sendError("No data found");
             }
             return $this->sendResponse($notification, 'success');
@@ -641,10 +667,11 @@ class AuthController extends BaseController {
         }
     }
 
-    public function notification() {
+    public function notification()
+    {
         try {
             $notification = Notifications::where('notifiable_id', auth()->user()->id)->get();
-            if(count($notification)>0) {
+            if (count($notification) > 0) {
                 return $this->sendResponse($notification, 'success');
             } else {
                 return $this->sendError("No data found");

@@ -136,7 +136,7 @@
                 <li>
                     <a type="button"
                         class="nav-link dropdown-btn {{ Request::segment(1) == 'listen_tags' || Request::segment(1) == 'listens' ? 'active1' : '' }}">
-                        <i class="zmdi zmdi-account-circle"></i><span>Listen <i class="fa fa-chevron-down fa-color icon-rotates"
+                        <i class="fa-solid fa-music"></i><span>Listen <i class="fa fa-chevron-down fa-color icon-rotates"
                                 aria-hidden="true"></i></span></a>
                     <ul class="nav-link dropdown-container"
                         style="padding:0; {{ Request::segment(1) == 'listen_tags' || Request::segment(1) == 'listens' ? 'display : block' : '' }}">
