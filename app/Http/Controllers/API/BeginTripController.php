@@ -150,7 +150,7 @@ class BeginTripController extends BaseController
             $pushNotificationData['id'] = $beginTrip->id;
             $pushNotificationData['notifiable_type'] = 'trip_end';
 
-            if($beginTrip->id && $request->trip_end == 'end') {
+            if($request->trip_end == 'end') {
                 BeginTripe::updateOrCreate(['id' => $beginTrip->id],
                     [   
                         'trip_end_date' => Carbon::now()->toDateTimeString(),
