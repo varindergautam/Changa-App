@@ -145,21 +145,18 @@ class BeginTripController extends BaseController
             $beginTrip = BeginTripe::updateOrCreate(['id' => $request->begin_trip_id],
                 $beginTripArr
             );
-
             $pushNotificationData['message'] = 'The tripe has benn ended';
             $pushNotificationData['id'] = $beginTrip->id;
             $pushNotificationData['notifiable_type'] = 'trip_end';
 
-            if($request->trip_end == 'end') {
+            if(!empty($request->begin_trip_id) && $request->trip_end == 'end') {
                 BeginTripe::updateOrCreate(['id' => $request->begin_trip_id],
                     [   
                         'trip_end_date' => Carbon::now()->toDateTimeString(),
                         'time_of_recording' => $request->time_of_recording,
                     ]
                 );
-
                 $setting = UserNotificationSetting::where('user_id', $userID)->first();
-        
                 if(isset($setting) && $setting->end_trip_remainder == '1') {
                     ChangaAppHelper::sendNotication($userID, $pushNotificationData);
                 } 

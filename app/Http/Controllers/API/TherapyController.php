@@ -29,6 +29,8 @@ class TherapyController extends BaseController
 
         if($request->id) {
             $users = Therapy::where('id', $request->id)->with('therapyTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Therapy::get()->pluck('user_id')->toArray();
+            $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->tag_id) {
@@ -52,6 +54,7 @@ class TherapyController extends BaseController
                     $arr[] = TherapyTag::where('id', $tag->therapy_tag_id)->get()->toArray();
                 }
                 $users[$key]['therapy_tag'] = $arr;
+                $users[$key]['mediators'] = isset($mediators) ? $mediators : NULL;
             }
             return $this->sendResponse( $users, 'Success' );
         } else {

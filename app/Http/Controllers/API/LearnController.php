@@ -29,6 +29,8 @@ class LearnController extends BaseController
         
         if($request->id) {
             $users = Learn::where('id', $request->id)->with('learnTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Learn::get()->pluck('user_id')->toArray();
+            $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->tag_id) {
@@ -53,7 +55,9 @@ class LearnController extends BaseController
                     $arr[] = LearnTag::where('id', $tag->learn_tag_id)->get()->toArray();
                 }
                 $users[$key]['learn_tag'] = $arr;
+                $users[$key]['mediators'] = isset($mediators) ? $mediators : NULL;
             }
+            
             return $this->sendResponse( $users, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');

@@ -28,6 +28,8 @@ class ListenController extends BaseController
         $users = Listen::with('user', 'listenTagMulti', 'favourite')->get();
         if($request->id) {
             $users = Listen::where('id', $request->id)->with('listenTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Listen::get()->pluck('user_id')->toArray();
+            $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->tag_id) {
@@ -50,6 +52,7 @@ class ListenController extends BaseController
                     $arr[] = ListenTag::where('id', $tag->listen_tag_id)->get()->toArray();
                 }
                 $users[$key]['listen_tag'] = $arr;
+                $users[$key]['mediators'] = isset($mediators) ? $mediators : NULL;
             }
             $success[ 'data' ] = $users;
             return $this->sendResponse( $users, 'Success' );

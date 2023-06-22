@@ -28,6 +28,8 @@ class MediateController extends BaseController
         $users = Mediate::with('user', 'mediateTagMulti', 'favourite')->get();
         if($request->id) {
             $users = Mediate::where('id', $request->id)->with('mediateTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Mediate::get()->pluck('user_id')->toArray();
+            $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->tag_id) {
@@ -51,6 +53,7 @@ class MediateController extends BaseController
                     $arr[] = MediateTag::where('id', $tag->mediate_tag_id)->get()->toArray();
                 }
                 $users[$key]['mediate_tag'] = $arr;
+                $users[$key]['mediators'] = isset($mediators) ? $mediators : NULL;
             }
             return $this->sendResponse( $users, 'Success' );
         } else {
