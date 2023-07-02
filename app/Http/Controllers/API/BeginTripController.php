@@ -255,7 +255,7 @@ class BeginTripController extends BaseController
 
     public function index() {
         try {
-            $beginTripes = BeginTripe::where('user_id', auth('sanctum')->user()->id)->get();
+            $beginTripes = BeginTripe::with('beginTripMemo', 'beginTripNowFeel')->where('user_id', auth('sanctum')->user()->id)->get();
             return $this->sendResponse( $beginTripes, 'Success' );
         }
         catch (\Exception $ex) {
