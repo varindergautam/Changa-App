@@ -33,6 +33,12 @@ class TherapyController extends BaseController
             $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
+        if($request->user_id) {
+            $users = Therapy::where('user_id', $request->user_id)->with('therapyTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Therapy::get()->pluck('user_id')->toArray();
+            $mediators = User::whereIn('id', $mediators_id)->get();
+        }
+
         if($request->tag_id) {
             $multi = TherapyTagMulti::where('therapy_id', $request->tag_id)->get()->pluck('therapy_id')->toArray();
             $users = Therapy::with('therapyTagMulti','user', 'favourite')->whereIn('id', $multi)->get();
@@ -207,6 +213,16 @@ class TherapyController extends BaseController
                 $users[$key]['therapy_tag'] = $arr;
             }
             return $this->sendResponse( $users, 'Success' );
+        } else {
+            return $this->sendResponse( [], 'No Data found');
+        }
+    }
+
+    public function therapyUser() {
+        $mediators_id = Therapy::get()->pluck('user_id')->toArray();
+        $mediate_tags = User::whereIn('id', $mediators_id)->get();
+        if($mediate_tags->count() > 0) {
+            return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');
         }

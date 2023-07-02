@@ -27,6 +27,12 @@ class LearnController extends BaseController
     public function learn(Request $request) {
         $users = Learn::with('learnTagMulti', 'user', 'favourite')->get();
         
+        if($request->user_id) {
+            $users = Learn::where('user_id', $request->user_id)->with('learnTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Learn::get()->pluck('user_id')->toArray();
+            $mediators = User::whereIn('id', $mediators_id)->get();
+        }
+
         if($request->id) {
             $users = Learn::where('id', $request->id)->with('learnTagMulti', 'user', 'favourite')->get();
             $mediators_id = Learn::get()->pluck('user_id')->toArray();
@@ -210,6 +216,16 @@ class LearnController extends BaseController
                 $users[$key]['learn_tag'] = $arr;
             }
             return $this->sendResponse( $users, 'Success' );
+        } else {
+            return $this->sendResponse( [], 'No Data found');
+        }
+    }
+
+    public function learnUser() {
+        $mediators_id = Learn::get()->pluck('user_id')->toArray();
+        $mediate_tags = User::whereIn('id', $mediators_id)->get();
+        if($mediate_tags->count() > 0) {
+            return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');
         }

@@ -32,6 +32,12 @@ class MediateController extends BaseController
             $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
+        if($request->user_id) {
+            $users = Mediate::where('user_id', $request->user_id)->with('mediateTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Mediate::get()->pluck('user_id')->toArray();
+            $mediators = User::whereIn('id', $mediators_id)->get();
+        }
+
         if($request->tag_id) {
             $multi = MediateTagMulti::where('mediate_tag_id', $request->tag_id)->get()->pluck('mediate_id')->toArray();
             $users = Mediate::with('mediateTagMulti','user', 'favourite')->whereIn('id', $multi)->get();
@@ -202,6 +208,16 @@ class MediateController extends BaseController
                 $users[$key]['mediate_tag'] = $arr;
             }
             return $this->sendResponse( $users, 'Success' );
+        } else {
+            return $this->sendResponse( [], 'No Data found');
+        }
+    }
+
+    public function mediateUser() {
+        $mediators_id = Mediate::get()->pluck('user_id')->toArray();
+        $mediate_tags = User::whereIn('id', $mediators_id)->get();
+        if($mediate_tags->count() > 0) {
+            return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');
         }

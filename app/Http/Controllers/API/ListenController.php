@@ -26,6 +26,13 @@ class ListenController extends BaseController
 
     public function listen(Request $request) {
         $users = Listen::with('user', 'listenTagMulti', 'favourite')->get();
+
+        if($request->user_id) {
+            $users = Listen::where('user_id', $request->user_id)->with('learnTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Listen::get()->pluck('user_id')->toArray();
+            $mediators = User::whereIn('id', $mediators_id)->get();
+        }
+
         if($request->id) {
             $users = Listen::where('id', $request->id)->with('listenTagMulti', 'user', 'favourite')->get();
             $mediators_id = Listen::get()->pluck('user_id')->toArray();
@@ -204,6 +211,16 @@ class ListenController extends BaseController
             }
             $success[ 'data' ] = $users;
             return $this->sendResponse( $users, 'Success' );
+        } else {
+            return $this->sendResponse( [], 'No Data found');
+        }
+    }
+
+    public function listenUser() {
+        $mediators_id = Listen::get()->pluck('user_id')->toArray();
+        $mediate_tags = User::whereIn('id', $mediators_id)->get();
+        if($mediate_tags->count() > 0) {
+            return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
             return $this->sendResponse( [], 'No Data found');
         }
