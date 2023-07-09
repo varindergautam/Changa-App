@@ -28,10 +28,14 @@ class MediateController extends BaseController
         $users = Mediate::with('user', 'mediateTagMulti', 'favourite')->get();
         if($request->id) {
             $users = Mediate::where('id', $request->id)->with('mediateTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Mediate::get()->pluck('user_id')->toArray();
+            $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->user_id) {
             $users = Mediate::where('user_id', $request->user_id)->with('mediateTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Mediate::get()->pluck('user_id')->toArray();
+            $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->tag_id) {
@@ -46,9 +50,9 @@ class MediateController extends BaseController
                 $users[$key]['file'] = asset('/storage/file/'. $mediate->file);
                 $users[$key]['created_date'] = ChangaAppHelper::dateFormat($mediate->created_at);
                 $users[$key]['url'] = url('/api/mediate/mediate?id=' . $mediate->id);
-                // $users[$key]['user']['profile_pic'] = isset($mediate->user) && !empty($mediate->user->profile_pic) ? asset('/storage/profile_pic/'. $mediate->user->profile_pic) : null;
+                $users[$key]['user']['profile_pic'] = isset($mediate->user) && !empty($mediate->user->profile_pic) ? asset('/storage/profile_pic/'. $mediate->user->profile_pic) : null;
 
-                // $users[$key]['user']['background_image'] = isset($mediate->user) && !empty($mediate->user->background_image) ? asset('/storage/file/'. $mediate->user->background_image) : null;
+                $users[$key]['user']['background_image'] = isset($mediate->user) && !empty($mediate->user->background_image) ? asset('/storage/file/'. $mediate->user->background_image) : null;
 
                 $arr = [];
                 foreach($mediate->mediateTagMulti as $tag) {
