@@ -20,7 +20,7 @@ class ListenController extends BaseController
         if($mediate_tags->count() > 0) {
             return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
-            return $this->sendResponse( [], 'No Data found');
+            return $this->sendError( [], 'No Data found');
         }
     }
 
@@ -64,7 +64,7 @@ class ListenController extends BaseController
             $success[ 'data' ] = $users;
             return $this->sendResponse( $users, 'Success' );
         } else {
-            return $this->sendResponse( [], 'No Data found');
+            return $this->sendError( [], 'No Data found');
         }
     }
 
@@ -150,7 +150,7 @@ class ListenController extends BaseController
             return $this->sendResponse( $Learn, 'Success' );
 
         } catch (\Exception $ex) {
-            return $this->sendResponse( $ex->getMessage(), 'something went wrong');
+            return $this->sendError( $ex->getMessage(), 'something went wrong');
         }
     }
 
@@ -159,7 +159,8 @@ class ListenController extends BaseController
         $file = 'required|mimetypes:image/jpeg,image/png,image/gif,video/webm,video/mp4,audio/mpeg,mpga,mp3,wav';
         return [
             'tag' => 'required',
-            'title' => 'required|unique:listens,title,'. $request->id,
+            // 'title' => 'required|unique:listens,title,'. $request->id,
+            'title' => 'required',
             'description' => 'required',
             'file' => $file,
             // 'background_image' => 'required|mimetypes:image/jpeg,image/png,image/jpg',
@@ -178,7 +179,7 @@ class ListenController extends BaseController
             }
         }
         catch (\Exception $ex) {
-            return $this->sendResponse( $ex->getMessage(), 'something went wrong');
+            return $this->sendError( $ex->getMessage(), 'something went wrong');
         }
     }
 
@@ -212,7 +213,7 @@ class ListenController extends BaseController
             $success[ 'data' ] = $users;
             return $this->sendResponse( $users, 'Success' );
         } else {
-            return $this->sendResponse( [], 'No Data found');
+            return $this->sendError( [], 'No Data found');
         }
     }
 
@@ -222,7 +223,7 @@ class ListenController extends BaseController
         if($mediate_tags->count() > 0) {
             return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
-            return $this->sendResponse( [], 'No Data found');
+            return $this->sendError( [], 'No Data found');
         }
     }
 }

@@ -19,7 +19,7 @@ class GuideController extends BaseController
                 }
                 return $this->sendResponse( $mediate_tags, 'Success' );
             } else {
-                return $this->sendResponse( [], 'No Data found');
+                return $this->sendError( [], 'No Data found');
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -44,7 +44,7 @@ class GuideController extends BaseController
                 }
                 return $this->sendResponse( $mediate_tags, 'Success' );
             } else {
-                return $this->sendResponse( [], 'No Data found');
+                return $this->sendError( [], 'No Data found');
             }
         } catch (\Throwable $th) {
             //throw $th;

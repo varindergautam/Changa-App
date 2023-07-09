@@ -14,7 +14,7 @@ class NarrativeController extends BaseController
         if($mediate_tags->count() > 0) {
             return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
-            return $this->sendResponse( [], 'No Data found');
+            return $this->sendError( [], 'No Data found');
         }
     }
 
@@ -36,7 +36,7 @@ class NarrativeController extends BaseController
             $narrative->narrative = $request->narrative;
             $narrative->user_id = auth()->user()->id;
             $narrative->save();
-            return $this->sendError( $narrative, 'Success' );
+            return $this->sendResponse( $narrative, 'Success' );
         } catch (\Throwable $th) {
             return $this->sendError( $th->getMessage(), 'something went wrong');
         }

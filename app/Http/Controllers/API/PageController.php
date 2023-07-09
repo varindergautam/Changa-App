@@ -15,7 +15,7 @@ class PageController extends BaseController
         if(!empty($terms)) {
             return $this->sendResponse( $terms, 'Success' );
         }
-        return $this->sendResponse( [], 'No Data found');
+        return $this->sendError( [], 'No Data found');
     }
 
     public function privacyPolicy()
@@ -25,6 +25,6 @@ class PageController extends BaseController
         if(!empty($terms)) {
             return $this->sendResponse( $terms, 'Success' );
         }
-        return $this->sendResponse( [], 'No Data found');
+        return $this->sendError( [], 'No Data found');
     }
 }

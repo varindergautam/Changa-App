@@ -30,7 +30,7 @@ class BeginTripController extends BaseController
             if($feelings->count() > 0) {
                 return $this->sendResponse( $feelings, 'Success' );
             } else {
-                return $this->sendResponse( [], 'No Data found');
+                return $this->sendError( [], 'No Data found');
             }
         } catch(Exception $e) {
             return $e->getMessage();
@@ -43,7 +43,7 @@ class BeginTripController extends BaseController
             if($feelings->count() > 0) {
                 return $this->sendResponse( $feelings, 'Success' );
             } else {
-                return $this->sendResponse( [], 'No Data found');
+                return $this->sendError( [], 'No Data found');
             }
         } catch(Exception $e) {
             return $e->getMessage();
@@ -59,7 +59,7 @@ class BeginTripController extends BaseController
                 }
                 return $this->sendResponse( $feelings, 'Success' );
             } else {
-                return $this->sendResponse( [], 'No Data found');
+                return $this->sendError( [], 'No Data found');
             }
         } catch(Exception $e) {
             return $e->getMessage();
@@ -72,7 +72,7 @@ class BeginTripController extends BaseController
             if($feelings->count() > 0) {
                 return $this->sendResponse( $feelings, 'Success' );
             } else {
-                return $this->sendResponse( [], 'No Data found');
+                return $this->sendError( [], 'No Data found');
             }
         } catch(Exception $e) {
             return $e->getMessage();
@@ -105,7 +105,7 @@ class BeginTripController extends BaseController
             }
             return $this->sendResponse( $users, 'Success' );
         } else {
-            return $this->sendResponse( [], 'No Data found');
+            return $this->sendError( [], 'No Data found');
         }
     }
 
@@ -115,7 +115,7 @@ class BeginTripController extends BaseController
             if($feelings->count() > 0) {
                 return $this->sendResponse( $feelings, 'Success' );
             } else {
-                return $this->sendResponse( [], 'No Data found');
+                return $this->sendError( [], 'No Data found');
             }
         } catch(Exception $e) {
             return $e->getMessage();
@@ -249,7 +249,7 @@ class BeginTripController extends BaseController
             }
         }
         catch (\Exception $ex) {
-            return $this->sendResponse( $ex->getMessage(), 'something went wrong');
+            return $this->sendError( $ex->getMessage(), 'something went wrong');
         }
     }
 

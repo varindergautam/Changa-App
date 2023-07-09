@@ -36,7 +36,7 @@ class FavouriteController extends BaseController
             return $this->sendResponse( $Learn, 'Success' );
 
         } catch (\Exception $ex) {
-            return $this->sendResponse( $ex->getMessage(), 'something went wrong');
+            return $this->sendError( $ex->getMessage(), 'something went wrong');
         }
     }
 
