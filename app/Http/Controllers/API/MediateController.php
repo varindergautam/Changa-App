@@ -50,7 +50,7 @@ class MediateController extends BaseController
                 $users[$key]['file'] = asset('/storage/file/'. $mediate->file);
                 $users[$key]['created_date'] = ChangaAppHelper::dateFormat($mediate->created_at);
                 $users[$key]['url'] = url('/api/mediate/mediate?id=' . $mediate->id);
-                $users[$key]['user']['profile_pic'] = isset($mediate->user) && !empty($mediate->user->profile_pic) ? asset('/storage/profile_pic/'. $mediate->user->profile_pic) : null;
+                // $users[$key]['user']['profile_pic'] = isset($mediate->user) && !empty($mediate->user->profile_pic) ? asset('/storage/profile_pic/'. $mediate->user->profile_pic) : null;
 
                 $users[$key]['user']['background_image'] = isset($mediate->user) && !empty($mediate->user->background_image) ? asset('/storage/file/'. $mediate->user->background_image) : null;
 
