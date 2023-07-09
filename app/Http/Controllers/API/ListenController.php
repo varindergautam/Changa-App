@@ -28,7 +28,7 @@ class ListenController extends BaseController
         $users = Listen::with('user', 'listenTagMulti', 'favourite')->get();
 
         if($request->user_id) {
-            $users = Listen::where('user_id', $request->user_id)->with('learnTagMulti', 'user', 'favourite')->get();
+            $users = Listen::where('user_id', $request->user_id)->with('listenTagMulti', 'user', 'favourite')->get();
             $mediators_id = Listen::get()->pluck('user_id')->toArray();
             $mediators = User::whereIn('id', $mediators_id)->get();
         }

@@ -10,7 +10,7 @@ use Validator;
 class NarrativeController extends BaseController
 {
     public function index() {
-        $mediate_tags = Narrative::get();
+        $mediate_tags = Narrative::where('user_id', auth()->user()->id)->get();
         if($mediate_tags->count() > 0) {
             return $this->sendResponse( $mediate_tags, 'Success' );
         } else {
@@ -29,11 +29,14 @@ class NarrativeController extends BaseController
             $narrative = new Narrative();
             if($request->id) {
                 $narrative = Narrative::find($request->id);
+                if(empty($narrative)) {
+                    return $this->sendError( [], 'No Data found');
+                }
             }
-            $narrative->user_id = auth()->user()->id;
             $narrative->narrative = $request->narrative;
+            $narrative->user_id = auth()->user()->id;
             $narrative->save();
-            return $this->sendResponse( $narrative, 'Success' );
+            return $this->sendError( $narrative, 'Success' );
         } catch (\Throwable $th) {
             return $this->sendError( $th->getMessage(), 'something went wrong');
         }
