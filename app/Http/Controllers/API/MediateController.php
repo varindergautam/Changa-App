@@ -41,6 +41,8 @@ class MediateController extends BaseController
         if($request->tag_id) {
             $multi = MediateTagMulti::where('mediate_tag_id', $request->tag_id)->get()->pluck('mediate_id')->toArray();
             $users = Mediate::with('mediateTagMulti','user', 'favourite')->whereIn('id', $multi)->get();
+            $mediators_id = Mediate::get()->pluck('user_id')->toArray();
+            $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($users->count() > 0) {
