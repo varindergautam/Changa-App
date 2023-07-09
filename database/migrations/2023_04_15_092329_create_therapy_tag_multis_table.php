@@ -13,6 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('therapy_tag_multis');
         Schema::create('therapy_tag_multis', function (Blueprint $table) {
             $table->id();
             $table->integer('therapy_tag_id');

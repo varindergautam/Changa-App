@@ -13,6 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('mediate_tag_multis');
         Schema::create('mediate_tag_multis', function (Blueprint $table) {
             $table->id();
             $table->integer('mediate_tag_id');

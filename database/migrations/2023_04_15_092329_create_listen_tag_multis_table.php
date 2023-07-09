@@ -13,6 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('listen_tag_multis');
         Schema::create('listen_tag_multis', function (Blueprint $table) {
             $table->id();
             $table->integer('listen_tag_id');

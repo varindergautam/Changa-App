@@ -13,6 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('audio_tag_mutlis');
         Schema::create('audio_tag_mutlis', function (Blueprint $table) {
             $table->id();
             $table->integer('audio_tag_id');
