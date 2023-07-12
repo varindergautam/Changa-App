@@ -142,15 +142,37 @@ class BeginTripController extends BaseController
                 'day' => $request->day,
             ];
 
-            $beginTrip = BeginTripe::updateOrCreate(['id' => $request->begin_trip_id],
-                $beginTripArr
-            );
-            $pushNotificationData['message'] = 'The tripe has benn ended';
-            $pushNotificationData['id'] = $beginTrip->id;
-            $pushNotificationData['notifiable_type'] = 'trip_end';
+            if($request->trip_end != 'end') {
+                $beginTrip = BeginTripe::create($beginTripArr);
+
+                if($request->file('voice_memo')) {
+                    $profile = $request->file('voice_memo');
+                    $path = "file";
+                    $fileName = ChangaAppHelper::uploadfile($profile, $path);
+                    $fileType = ChangaAppHelper::checkFileExtension($fileName);
+                }
+    
+                $memoArr = [
+                    'begin_tripe_id' => $beginTrip->id,
+                    'voice_memo' => @$fileName,
+                    'file_type' => $request->file_type,
+                    'guide_id' => $request->guide_id,
+                    'time_of_recording' => $request->time_of_recording_memo,
+                ];
+    
+                $beginTripMemo = BeginTripMemo::updateOrCreate(['id' => $request->begin_trip_memos_id],
+                    $memoArr
+                );
+    
+                $beginTrip->begin_trip_memo = $beginTripMemo;
+            }
+            
 
             if(!empty($request->begin_trip_id) && $request->trip_end == 'end') {
-                BeginTripe::updateOrCreate(['id' => $request->begin_trip_id],
+                $pushNotificationData['message'] = 'The trip has been ended';
+                $pushNotificationData['id'] = $request->begin_trip_id;
+                $pushNotificationData['notifiable_type'] = 'trip_end';
+                $beginTrip = BeginTripe::updateOrCreate(['id' => $request->begin_trip_id],
                     [   
                         'trip_end_date' => Carbon::now()->toDateTimeString(),
                         'time_of_recording' => $request->time_of_recording,
@@ -162,26 +184,7 @@ class BeginTripController extends BaseController
                 } 
             }
 
-            if($request->file('voice_memo')) {
-                $profile = $request->file('voice_memo');
-                $path = "file";
-                $fileName = ChangaAppHelper::uploadfile($profile, $path);
-                $fileType = ChangaAppHelper::checkFileExtension($fileName);
-            }
-
-            $memoArr = [
-                'begin_tripe_id' => $beginTrip->id,
-                'voice_memo' => @$fileName,
-                'file_type' => $request->file_type,
-                'guide_id' => $request->guide_id,
-                'time_of_recording' => $request->time_of_recording_memo,
-            ];
-
-            $beginTripMemo = BeginTripMemo::updateOrCreate(['id' => $request->begin_trip_memos_id],
-                $memoArr
-            );
-
-            $beginTrip->begin_trip_memo = $beginTripMemo;
+            
             return $this->sendResponse( $beginTrip, 'Success' );
         } catch(Exception $e) {
             return $e->getMessage();
