@@ -508,7 +508,7 @@ class AuthController extends BaseController
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:191',
             'email' => 'required|max:191|email|unique:users,email,' . $user_id,
-            'phone' => 'required|max:191',
+            // 'phone' => 'required|max:191',
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors()->all());
