@@ -25,23 +25,23 @@ class ListenController extends BaseController
     }
 
     public function listen(Request $request) {
-        $users = Listen::with('user', 'listenTagMulti', 'favourite')->get();
+        $users = Listen::with('user', 'listenTagMulti', 'favourite')->where('active', config('commonStatus.ACTIVE'))->get();
 
         if($request->user_id) {
-            $users = Listen::where('user_id', $request->user_id)->with('listenTagMulti', 'user', 'favourite')->get();
-            $mediators_id = Listen::get()->pluck('user_id')->toArray();
+            $users = Listen::where('user_id', $request->user_id)->where('active', config('commonStatus.ACTIVE'))->with('listenTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Listen::where('active', config('commonStatus.ACTIVE'))->get()->pluck('user_id')->toArray();
             $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->id) {
-            $users = Listen::where('id', $request->id)->with('listenTagMulti', 'user', 'favourite')->get();
-            $mediators_id = Listen::get()->pluck('user_id')->toArray();
+            $users = Listen::where('id', $request->id)->where('active', config('commonStatus.ACTIVE'))->with('listenTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Listen::where('active', config('commonStatus.ACTIVE'))->get()->pluck('user_id')->toArray();
             $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->tag_id) {
             $multi = ListenTagMulti::where('listen_tag_id', $request->tag_id)->get()->pluck('listen_id')->toArray();
-            $users = Listen::with('listenTagMulti','user', 'favourite')->whereIn('id', $multi)->get();
+            $users = Listen::where('active', config('commonStatus.ACTIVE'))->with('listenTagMulti','user', 'favourite')->whereIn('id', $multi)->get();
         }
 
         if($users->count() > 0) {
@@ -106,6 +106,7 @@ class ListenController extends BaseController
                     'file' => $fileName,
                     'file_type' => $fileType,
                     'background_image' => $background_image,
+                    'active' => config('commonStatus.INACTIVE'),
                 ]
             );
 
@@ -218,7 +219,7 @@ class ListenController extends BaseController
     }
 
     public function listenUser() {
-        $mediators_id = Listen::get()->pluck('user_id')->toArray();
+        $mediators_id = Listen::where('active', config('commonStatus.ACTIVE'))->get()->pluck('user_id')->toArray();
         $mediate_tags = User::whereIn('id', $mediators_id)->get();
         if($mediate_tags->count() > 0) {
             return $this->sendResponse( $mediate_tags, 'Success' );

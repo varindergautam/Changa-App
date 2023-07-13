@@ -25,22 +25,22 @@ class MediateController extends BaseController
     }
 
     public function mediate(Request $request){
-        $users = Mediate::with('user', 'mediateTagMulti', 'favourite')->get();
+        $users = Mediate::with('user', 'mediateTagMulti', 'favourite')->where('active', config('commonStatus.ACTIVE'))->get();
         if($request->id) {
-            $users = Mediate::where('id', $request->id)->with('mediateTagMulti', 'user', 'favourite')->get();
+            $users = Mediate::where('id', $request->id)->with('mediateTagMulti', 'user', 'favourite')->where('active', config('commonStatus.ACTIVE'))->get();
             $mediators_id = Mediate::get()->pluck('user_id')->toArray();
             $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->user_id) {
-            $users = Mediate::where('user_id', $request->user_id)->with('mediateTagMulti', 'user', 'favourite')->get();
-            $mediators_id = Mediate::get()->pluck('user_id')->toArray();
+            $users = Mediate::where('user_id', $request->user_id)->with('mediateTagMulti', 'user', 'favourite')->where('active', config('commonStatus.ACTIVE'))->get();
+            $mediators_id = Mediate::where('active', config('commonStatus.ACTIVE'))->get()->pluck('user_id')->toArray();
             $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->tag_id) {
             $multi = MediateTagMulti::where('mediate_tag_id', $request->tag_id)->get()->pluck('mediate_id')->toArray();
-            $users = Mediate::with('mediateTagMulti','user', 'favourite')->whereIn('id', $multi)->get();
+            $users = Mediate::with('mediateTagMulti','user', 'favourite')->where('active', config('commonStatus.ACTIVE'))->whereIn('id', $multi)->get();
         }
 
         if($users->count() > 0) {
@@ -102,6 +102,7 @@ class MediateController extends BaseController
                     'file' => $fileName,
                     'file_type' => $fileType,
                     'background_image' => $background_image,
+                    'active' => config('commonStatus.INACTIVE'),
                 ]
             );
 
@@ -215,7 +216,7 @@ class MediateController extends BaseController
     }
 
     public function mediateUser() {
-        $mediators_id = Mediate::get()->pluck('user_id')->toArray();
+        $mediators_id = Mediate::where('active', config('commonStatus.ACTIVE'))->get()->pluck('user_id')->toArray();
         $mediate_tags = User::whereIn('id', $mediators_id)->get();
         if($mediate_tags->count() > 0) {
             return $this->sendResponse( $mediate_tags, 'Success' );

@@ -25,23 +25,23 @@ class LearnController extends BaseController
     }
 
     public function learn(Request $request) {
-        $users = Learn::with('learnTagMulti', 'user', 'favourite')->get();
+        $users = Learn::where('active', config('commonStatus.ACTIVE'))->with('learnTagMulti', 'user', 'favourite')->get();
         
         if($request->user_id) {
-            $users = Learn::where('user_id', $request->user_id)->with('learnTagMulti', 'user', 'favourite')->get();
-            $mediators_id = Learn::get()->pluck('user_id')->toArray();
+            $users = Learn::where('user_id', $request->user_id)->where('active', config('commonStatus.ACTIVE'))->with('learnTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Learn::where('active', config('commonStatus.ACTIVE'))->get()->pluck('user_id')->toArray();
             $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->id) {
-            $users = Learn::where('id', $request->id)->with('learnTagMulti', 'user', 'favourite')->get();
-            $mediators_id = Learn::get()->pluck('user_id')->toArray();
+            $users = Learn::where('id', $request->id)->where('active', config('commonStatus.ACTIVE'))->with('learnTagMulti', 'user', 'favourite')->get();
+            $mediators_id = Learn::where('active', config('commonStatus.ACTIVE'))->get()->pluck('user_id')->toArray();
             $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->tag_id) {
             $multi = LearnTagMulti::where('learn_tag_id', $request->tag_id)->get()->pluck('learn_id')->toArray();
-            $users = Learn::with('learnTagMulti','user', 'favourite')->whereIn('id', $multi)->get();
+            $users = Learn::with('learnTagMulti','user', 'favourite')->where('active', config('commonStatus.ACTIVE'))->whereIn('id', $multi)->get();
         }
 
         if($users->count() > 0) {
@@ -108,6 +108,7 @@ class LearnController extends BaseController
                     'file' => $fileName,
                     'file_type' => $fileType,
                     'background_image' => $background_image,
+                    'active' => config('commonStatus.INACTIVE'),
                 ]
             );
 
@@ -223,7 +224,7 @@ class LearnController extends BaseController
     }
 
     public function learnUser() {
-        $mediators_id = Learn::get()->pluck('user_id')->toArray();
+        $mediators_id = Learn::where('active', config('commonStatus.ACTIVE'))->get()->pluck('user_id')->toArray();
         $mediate_tags = User::whereIn('id', $mediators_id)->get();
         if($mediate_tags->count() > 0) {
             return $this->sendResponse( $mediate_tags, 'Success' );

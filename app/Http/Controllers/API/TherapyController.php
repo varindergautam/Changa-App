@@ -25,23 +25,23 @@ class TherapyController extends BaseController
     }
 
     public function therapy(Request $request) {
-        $users = Therapy::with('therapyTagMulti', 'user', 'favourite')->get();
+        $users = Therapy::with('therapyTagMulti', 'user', 'favourite')->where('active', config('commonStatus.ACTIVE'))->get();
 
         if($request->id) {
-            $users = Therapy::where('id', $request->id)->with('therapyTagMulti', 'user', 'favourite')->get();
+            $users = Therapy::where('id', $request->id)->with('therapyTagMulti', 'user', 'favourite')->where('active', config('commonStatus.ACTIVE'))->get();
             $mediators_id = Therapy::get()->pluck('user_id')->toArray();
             $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->user_id) {
-            $users = Therapy::where('user_id', $request->user_id)->with('therapyTagMulti', 'user', 'favourite')->get();
+            $users = Therapy::where('user_id', $request->user_id)->where('active', config('commonStatus.ACTIVE'))->with('therapyTagMulti', 'user', 'favourite')->get();
             $mediators_id = Therapy::get()->pluck('user_id')->toArray();
             $mediators = User::whereIn('id', $mediators_id)->get();
         }
 
         if($request->tag_id) {
             $multi = TherapyTagMulti::where('therapy_id', $request->tag_id)->get()->pluck('therapy_id')->toArray();
-            $users = Therapy::with('therapyTagMulti','user', 'favourite')->whereIn('id', $multi)->get();
+            $users = Therapy::with('therapyTagMulti','user', 'favourite')->where('active', config('commonStatus.ACTIVE'))->whereIn('id', $multi)->get();
         }
 
         if($users->count() > 0) {
@@ -106,6 +106,7 @@ class TherapyController extends BaseController
                     'file' => $fileName,
                     'file_type' => $fileType,
                     'background_image' => $background_image,
+                    'active' => config('commonStatus.INACTIVE'),
                 ]
             );
 
@@ -220,7 +221,7 @@ class TherapyController extends BaseController
     }
 
     public function therapyUser() {
-        $mediators_id = Therapy::get()->pluck('user_id')->toArray();
+        $mediators_id = Therapy::where('active', config('commonStatus.ACTIVE'))->get()->pluck('user_id')->toArray();
         $mediate_tags = User::whereIn('id', $mediators_id)->get();
         if($mediate_tags->count() > 0) {
             return $this->sendResponse( $mediate_tags, 'Success' );
